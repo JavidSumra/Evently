@@ -128,4 +128,78 @@ const getEventDetailById = AsyncHandler(async (req, res) => {
   }
 });
 
-export { createEvent, deleteEvent, getAllEvents, getEventDetailById };
+const updateEvent = AsyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res
+        .status(402)
+        .json(
+          new APIError("ID Required. Please provide a valid parameter", 402)
+        );
+    }
+
+    const {
+      title,
+      description,
+      startDateTime,
+      endDateTime,
+      location,
+      price,
+      isFree,
+      category,
+    } = req.body;
+
+    if (
+      !title ||
+      !description ||
+      !startDateTime ||
+      !endDateTime ||
+      !location ||
+      !price ||
+      !category
+    ) {
+      return res.status(402).json(new APIError("Required Field Missing", 402));
+    }
+
+    const updatedEvent = await Event.findByIdAndUpdate(
+      id,
+      {
+        title,
+        description,
+        startDateTime,
+        endDateTime,
+        location,
+        price,
+        category,
+        isFree,
+        organizer: req?.user?.id,
+      },
+      { new: true }
+    );
+
+    if (!updatedEvent) {
+      return res
+        .status(502)
+        .json(new APIError("Failed to update event. Event not found", 502));
+    }
+
+    res
+      .status(200)
+      .json(new APIResponse("Event Updated Successfully", 200, updatedEvent));
+  } catch (error) {
+    console.log(error);
+    res
+      .status(502)
+      .json(new APIError(error?.message || "Internal Server Error", 502));
+  }
+});
+
+export {
+  createEvent,
+  deleteEvent,
+  getAllEvents,
+  getEventDetailById,
+  updateEvent,
+};

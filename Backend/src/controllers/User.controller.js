@@ -140,4 +140,39 @@ const logoutUser = AsyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser };
+const deleteAccount = AsyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res
+        .status(402)
+        .json(new APIError("Provide Necessary Parameters", 402));
+    }
+
+    const isUserExistWithId = await User.findById(id);
+
+    if (!isUserExistWithId) {
+      return res
+        .status(402)
+        .json(new APIError(`User Not Exist With ID : ${id}`, 402));
+    }
+
+    const isDeleted = await User.findByIdAndDelete(id);
+
+    if (!isDeleted) {
+      return res
+        .status(502)
+        .json(new APIError("Failed to Delete Account", 502));
+    }
+
+    res
+      .status(200)
+      .json(new APIResponse("Account Deleted Successfully", 200, isDeleted));
+  } catch (error) {
+    console.log(error);
+    res.status(502).json(new APIError("Failed to Delete Account", 502));
+  }
+});
+
+export { registerUser, loginUser, logoutUser, deleteAccount };
