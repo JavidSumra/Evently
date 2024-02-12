@@ -5,23 +5,41 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server.js -e .js"
+    "dev": "nodemon server.js -e .js",
+    "prepare": "cd .. && husky install Backend/.husky",
+    "test": "jest --detectOpenHandles"
   },
   "author": "JavidSumra",
   "license": "ISC",
+  "*.js": [
+    "eslint",
+    "prettier --write ."
+  ],
   "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "husky": "^9.0.10",
+    "lint-staged": "^15.2.2",
     "mongoosejs-cli": "^1.0.7",
     "nodemon": "^3.0.3",
     "prettier": "^3.2.4"
   },
   "dependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "cloudinary": "^2.0.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
+    "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.1.1"
+    "mongoose": "^8.1.1",
+    "multer": "^1.4.5-lts.1",
+    "supertest": "^6.3.4"
   }
 }
