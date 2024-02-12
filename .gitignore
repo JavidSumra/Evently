@@ -1,2 +1,6 @@
 /Backend/node_modules
+/Evently/node_modules
+/Evently/.env
 /Backend/.env
+/Backend/*.md
+*.png
