@@ -7,12 +7,17 @@ const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: [true, "FirstName is Required"],
       trim: true,
+      default: "",
     },
     lastName: {
       type: String,
-      required: [true, "LastName is Required"],
+      trim: true,
+      default: "",
+    },
+    userName: {
+      type: String,
+      required: [true, "UserName is Required"],
       trim: true,
     },
     email: {
@@ -28,10 +33,6 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
       default: "",
-    },
-    avatar: {
-      type: String,
-      default: "", //Cloudinary URL
     },
   },
   {

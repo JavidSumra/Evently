@@ -1,6 +1,8 @@
-/Backend/node_modules
-/Evently/node_modules
-/Evently/.env
-/Backend/.env
-/Backend/*.md
-*.png
+# Ignore .env file
+**/.env
+
+# Ignore node_modules directory
+**/node_modules/
+
+# Ignore Markdown Files
+**/.md
