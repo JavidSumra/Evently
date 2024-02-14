@@ -42,7 +42,7 @@ jobs:
           REFRESH_TOKEN_EXPIRY: 15d
         run: |
           cd Backend
-          npm ci
+          npm i
 
       - name: Run tests
         env:
