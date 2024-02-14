@@ -35,11 +35,6 @@ jobs:
           mongodb-port: 27017
 
       - name: Install dependencies
-        env:
-          SALT_ROUND: ${{ secrets.SALT_ROUND }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          ACCESS_TOKEN_EXPIRY: 1d
-          REFRESH_TOKEN_EXPIRY: 15d
         run: |
           cd Backend
           npm i
@@ -48,6 +43,10 @@ jobs:
         env:
           MONGODB_URL: ${{ secrets.MONGODB_URL }}
           CI: true
+          SALT_ROUND: ${{ secrets.SALT_ROUND }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ACCESS_TOKEN_EXPIRY: 1d
+          REFRESH_TOKEN_EXPIRY: 15d
         run: |
           cd Backend 
           npm run test
