@@ -10,7 +10,7 @@ let server, agent, token;
 
 describe("Evently test suite ", () => {
   beforeAll(async () => {
-    await mongoose.connect(`${process.env.MONGO_DB_URL}/Evently_Test`);
+    await mongoose.connect(`mongodb://localhost:27017/Evently_Test`);
 
     server = app.listen(3005, () => {});
     agent = request.agent(server);
