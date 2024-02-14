@@ -2,6 +2,7 @@ import { User } from "../models/User.model.js";
 import { AsyncHandler } from "../utils/AsyncHandler.util.js";
 import { APIError } from "../utils/APIError.util.js";
 import { APIResponse } from "../utils/APIResponse.util.js";
+import jwt from "jsonwebtoken";
 
 const generateToken = async (id) => {
   try {
@@ -22,11 +23,9 @@ const generateToken = async (id) => {
 
 const registerUser = AsyncHandler(async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, userName, email, password } = req.body;
 
-    if (
-      [firstName, email, lastName, password].some((attr) => attr?.trim() === "")
-    ) {
+    if ([email, userName, password].some((attr) => attr?.trim() === "")) {
       return res.status(402).json(new APIError("All fields are required", 402));
     }
 
@@ -40,15 +39,22 @@ const registerUser = AsyncHandler(async (req, res) => {
         .json(new APIError("User Already Exist With Provided Email", 402));
     }
 
+    if (password.length < 8) {
+      return res
+        .status(402)
+        .json(new APIError("Password Must be 8 Character Long", 402));
+    }
+
     const createUser = await User.create({
       firstName,
       lastName,
+      userName,
       email,
       password,
     });
 
     const isUserCreated = await User.findById({ _id: createUser._id }).select(
-      "-password -refreshToken"
+      "-password -refreshToken -created_at -updated_at -__v"
     );
 
     const { accessToken, refreshToken } = await generateToken(
@@ -59,12 +65,10 @@ const registerUser = AsyncHandler(async (req, res) => {
       res
         .status(200)
         .cookie("authToken", accessToken, {
-          httpOnly: true,
-          maxAge: new Date().getDate() + 7,
+          maxAge: 604800000,
         })
         .cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          maxAge: new Date().getDate() + 30,
+          maxAge: 2592000000,
         })
         .json(new APIResponse("User Created Successfully", 200, isUserCreated));
     } else {
@@ -98,7 +102,7 @@ const loginUser = AsyncHandler(async (req, res) => {
   }
 
   const loggedInUser = await User.findById(isUserExist?._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken -created_at -updated_at -__v"
   );
 
   const { accessToken, refreshToken } = await generateToken(isUserExist?._id);
@@ -106,11 +110,9 @@ const loginUser = AsyncHandler(async (req, res) => {
   res
     .status(200)
     .cookie("authToken", accessToken, {
-      httpOnly: true,
       maxAge: 604800000, // 7 Days
     })
     .cookie("refreshToken", refreshToken, {
-      httpOnly: true,
       maxAge: 2592000000, //30 Days
     })
     .json(new APIResponse("User Logged In Successfully", 200, loggedInUser));
@@ -175,4 +177,57 @@ const deleteAccount = AsyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, deleteAccount };
+const refreshAccessToken = AsyncHandler(async (req, res) => {
+  try {
+    const token = req.cookies?.refreshToken;
+
+    if (!token) {
+      return res.status(402).json(new APIError("Refresh Token Required", 402));
+    }
+
+    const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decodeToken?._id) {
+      return res
+        .status(402)
+        .json(new APIError("Invalid or Expired Refresh Token", 402));
+    }
+
+    const isUserExist = await User.findById(decodeToken?._id);
+
+    if (!isUserExist) {
+      return res
+        .status(402)
+        .json(new APIError("Invalid or Expired Refresh Token", 402));
+    }
+
+    const loggedInUser = await User.findById(isUserExist?._id).select(
+      "-password -refreshToken -created_at -updated_at -__v"
+    );
+
+    const { accessToken, refreshToken } = await generateToken(isUserExist?._id);
+
+    res
+      .status(200)
+      .cookie("authToken", accessToken, {
+        maxAge: 604800000, // 7 Days
+      })
+      .cookie("refreshToken", refreshToken, {
+        maxAge: 2592000000, //30 Days
+      })
+      .json(new APIResponse("User Logged In Successfully", 200, loggedInUser));
+  } catch (error) {
+    console.log(error);
+    res
+      .status(502)
+      .json(new APIError(error?.message || "Internal Server Error", 502));
+  }
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  deleteAccount,
+  refreshAccessToken,
+};

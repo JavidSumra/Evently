@@ -29,7 +29,7 @@ export default function Home() {
               companies with our global community.
             </p>
             <Button size="lg" asChild className="button w-full sm:w-fit">
-              <Link to="#events">Explore Now</Link>
+              <a href="#events">Explore Now</a>
             </Button>
           </div>
 
@@ -51,7 +51,7 @@ export default function Home() {
           Trust by <br /> Thousands of Events
         </h2>
 
-        <div className="flex w-full flex-col gap-5 md:flex-row">
+        <div className="flex w-full flex-col gap-5 md:flex-row" id="events">
           <Search />
           <CategoryFilter />
         </div>

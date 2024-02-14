@@ -1,13 +1,14 @@
-import SigninForm from "./SigninForm";
+import React from "react";
+import SignupForm from "./SignupForm";
 
-const SignInPage = () => {
+const Signup = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-sm w-full px-6 py-8 bg-white rounded-lg shadow-md">
-        <SigninForm />
+        <SignupForm />
       </div>
     </div>
   );
 };
 
-export default SignInPage;
+export default Signup;

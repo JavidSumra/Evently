@@ -230,29 +230,6 @@ body {
   }
 }
 
-/* ========================================== CLERK STYLES */
-.cl-logoImage {
-  height: 38px;
-}
-
-.cl-userButtonBox {
-  flex-direction: row-reverse;
-}
-
-.cl-userButtonOuterIdentifier {
-  font-size: 16px;
-}
-
-.cl-userButtonPopoverCard {
-  right: 4px !important;
-}
-
-.cl-formButtonPrimary:hover,
-.cl-formButtonPrimary:focus,
-.cl-formButtonPrimary:active {
-  background-color: #705CF7
-}
-
 /* ========================================== REACT-DATEPICKER STYLES */
 .datePicker {
   width: 100%;
@@ -294,4 +271,8 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555; /* Handle color on hover */
+}
+
+.body{
+  scroll-behavior: smooth;
 }

@@ -36,8 +36,6 @@ export function FileUploader({
       //   {...getRootProps()}
       className="flex-center bg-dark-3 flex h-72 cursor-pointer flex-col overflow-hidden rounded-xl bg-grey-50"
     >
-      <input className="cursor-pointer" />
-
       {imageUrl ? (
         <div className="flex h-full w-full flex-1 justify-center ">
           <img
@@ -53,11 +51,14 @@ export function FileUploader({
           <img src={UploadImg} width={77} height={77} alt="file upload" />
           <h3 className="mb-2 mt-2">Drag photo here</h3>
           <p className="p-medium-12 mb-4">SVG, PNG, JPG</p>
-          <Button type="button" className="rounded-full">
-            Select from computer
+          <Button type="button" className="rounded-full cursor-pointer">
+            <label htmlFor="fileUpload" className="cursor-pointer">
+              Select from computer
+            </label>
           </Button>
         </div>
       )}
+      <input type="file" className="hidden" id="fileUpload" />
     </div>
   );
 }

@@ -12,7 +12,7 @@ const CreateEvent = () => {
       </section>
 
       <div className="wrapper my-8">
-        <EventForm userId={"1"} type="Create" />
+        <EventForm />
       </div>
     </>
   );

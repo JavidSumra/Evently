@@ -6,11 +6,16 @@ import Footer from "@/components/shared/Footer";
 import CreateEvent from "@/pages/Event/CreateEvent";
 import Signin from "@/pages/Signin";
 import Profile from "@/pages/Profile";
+import Signup from "@/pages/Signup";
 
 const router = createBrowserRouter([
   {
-    path: "/login",
+    path: "/signin",
     element: <Signin />,
+  },
+  {
+    path: "/signup",
+    element: <Signup />,
   },
   {
     path: "/",
