@@ -39,11 +39,12 @@ jobs:
           npm ci
 
       - name: Run tests
+        env:
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          CI: true
         run: |
           cd Backend 
           npm run test
-        env:
-          CI: true
 
   send-slack-notification:
     runs-on: ubuntu-latest
