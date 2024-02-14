@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon server.js -e .js",
-    "prepare": "cd .. && husky install Backend/.husky",
     "test": "jest --detectOpenHandles"
   },
   "author": "JavidSumra",
