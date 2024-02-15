@@ -40,12 +40,11 @@ jobs:
 
       - name: Run tests
         env:
-          MONGODB_URL: ${{ secrets.MONGODB_URL }}
-          CI: true
           SALT_ROUND: ${{ secrets.SALT_ROUND }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ACCESS_TOKEN_EXPIRY: 1d
           REFRESH_TOKEN_EXPIRY: 15d
+          CI: true
         run: |
           cd Backend 
           npm run test
