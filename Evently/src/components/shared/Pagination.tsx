@@ -12,17 +12,17 @@ type PaginationProps = {
 
 const Pagination = ({ page, totalPages, urlParamName }: PaginationProps) => {
   //   const router = useRouter();
+  console.log(urlParamName);
   //   const searchParams = useSearchParams();
 
   const onClick = (btnType: string) => {
-    const pageValue = btnType === "next" ? Number(page) + 1 : Number(page) - 1;
-
+    console.log(btnType);
+    // const pageValue = btnType === "next" ? Number(page) + 1 : Number(page) - 1;
     // const newUrl = formUrlQuery({
     //   params: searchParams.toString(),
     //   key: urlParamName || "page",
     //   value: pageValue.toString(),
     // });
-
     // router.push(newUrl, { scroll: false });
   };
 

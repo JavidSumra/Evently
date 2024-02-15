@@ -6,3 +6,5 @@
 
 # Ignore Markdown Files
 **/.md
+# Local Netlify folder
+.netlify

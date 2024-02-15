@@ -26,8 +26,8 @@ type DropdownProps = {
 };
 
 const Dropdown = ({ value, onChangeHandler }: DropdownProps) => {
-  const [categories, setCategories] = useState([]);
-  const [newCategory, setNewCategory] = useState("");
+  // const [categories, setCategories] = useState([]);
+  const [_, setNewCategory] = useState("");
 
   const handleAddCategory = () => {
     // createCategory({

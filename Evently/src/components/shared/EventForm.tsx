@@ -8,12 +8,12 @@ import UrlImg from "../../assets/icons/link.svg";
 
 import "react-datepicker/dist/react-datepicker.css";
 
-import { useForm, SubmitHandler } from "react-hook-form";
+// import { useForm, SubmitHandler } from "react-hook-form";
 
-interface EventDetails {
-  title: String;
-  category: String;
-}
+// interface EventDetails {
+//   title: String;
+//   category: String;
+// }
 
 const EventForm = () => {
   return (
