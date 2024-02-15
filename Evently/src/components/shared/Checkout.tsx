@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 // import { loadStripe } from "@stripe/stripe-js";
 
 // import { IEvent } from "@/lib/database/models/event.model";
@@ -9,6 +9,7 @@ import { Button } from "../ui/button";
 
 const Checkout = ({ event, userId }: { event: any; userId: string }) => {
   useEffect(() => {
+    console.log(userId);
     // Check to see if this is a redirect back from Checkout
     const query = new URLSearchParams(window.location.search);
 
@@ -23,15 +24,15 @@ const Checkout = ({ event, userId }: { event: any; userId: string }) => {
     }
   }, []);
 
-  const onCheckout = async () => {
-    const order = {
-      eventTitle: event.title,
-      eventId: event._id,
-      price: event.price,
-      isFree: event.isFree,
-      buyerId: userId,
-    };
-  };
+  // const onCheckout = async () => {
+  //   const order = {
+  //     eventTitle: event.title,
+  //     eventId: event._id,
+  //     price: event.price,
+  //     isFree: event.isFree,
+  //     buyerId: userId,
+  //   };
+  // };
 
   return (
     <form method="post">

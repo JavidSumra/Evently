@@ -3,7 +3,7 @@ import Collection from "@/components/shared/Collection";
 import Search from "@/components/shared/Search";
 import { Button } from "@/components/ui/button";
 // import { SearchParamProps } from "@/types";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import HomeImage from "../../assets/images/hero.png";
 
 export default function Home() {

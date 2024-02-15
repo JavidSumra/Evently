@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from "react";
 
 const CategoryFilter = () => {
-  const [categories, setCategories] = useState([{ name: "Test", _id: 1 }]);
+  const [categories] = useState([{ name: "Test", _id: 1 }]);
   //   const router = useRouter();
   //   const searchParams = useSearchParams();
 
@@ -27,7 +27,7 @@ const CategoryFilter = () => {
   }, []);
 
   const onSelectCategory = (category: string) => {
-    let newUrl = "";
+    // let newUrl = "";
 
     if (category && category !== "All") {
       //   newUrl = formUrlQuery({

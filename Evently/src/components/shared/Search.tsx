@@ -15,7 +15,7 @@ const Search = ({
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      let newUrl = "";
+      // let newUrl = "";
 
       if (query) {
         // newUrl = formUrlQuery({

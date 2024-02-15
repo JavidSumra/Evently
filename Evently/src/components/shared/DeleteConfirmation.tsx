@@ -17,8 +17,9 @@ import DeletImg from "../../assets/icons/delete.svg";
 // import { deleteEvent } from "@/lib/actions/event.actions";
 
 export const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
+  console.log(eventId);
   //   const pathname = usePathname();
-  let [isPending, startTransition] = useTransition();
+  let [isPending] = useTransition();
 
   return (
     <AlertDialog>
