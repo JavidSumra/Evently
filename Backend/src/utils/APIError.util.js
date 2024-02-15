@@ -7,7 +7,7 @@ export class APIError extends Error {
   ) {
     super(message);
     this.data = null; //There is No Data Sent to User on Error
-    this.message = message;
+    this.errorMessage = message;
     this.statusCode = statusCode;
     this.errors = errors;
     this.success = false;

@@ -15,7 +15,12 @@ app.use(bodyParser.json({ limit: "18kb" }));
 app.use(express.urlencoded({ extended: true, limit: "18kb" }));
 
 // CORS Configuration
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
 
 //Cookies Parsing
 app.use(cookieParser());

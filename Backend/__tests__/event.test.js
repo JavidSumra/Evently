@@ -26,6 +26,7 @@ describe("Evently test suite ", () => {
     const res = await agent.post("/api/v1/users/signup").send({
       firstName: "Javid",
       lastName: "Sumara",
+      userName: "Javid Sumra",
       email: "test_db@gmail.com",
       password: "12345678",
     });
