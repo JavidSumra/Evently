@@ -7,7 +7,6 @@ on:
       - dev
   pull_request:
     branches:
-      - main
       - dev
 
 jobs:
@@ -72,3 +71,29 @@ jobs:
           fields: repo,message,commit,author,workflow,job,took
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  deploy-to-netlify:
+    runs-on: ubuntu-latest
+    needs: run-tests
+    if: ${{ needs.run-tests.result == 'success' }} # Only deploy if tests pass
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          cd Evently
+          npm install
+
+      - name: Build
+        run: |
+          cd Evently
+          npm run build
+
+      - name: Deploy to Netlify
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          cd Evently
+          npx netlify-cli deploy --prod --dir=./build
