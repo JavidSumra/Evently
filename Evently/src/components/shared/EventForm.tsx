@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 
 import UploadImg from "../../assets/icons/upload.svg";
@@ -8,27 +9,103 @@ import UrlImg from "../../assets/icons/link.svg";
 
 import "react-datepicker/dist/react-datepicker.css";
 
-// import { useForm, SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
-// interface EventDetails {
-//   title: String;
-//   category: String;
-// }
+import { useForm, SubmitHandler } from "react-hook-form";
+import axios from "axios";
+import { API_ENDPOINT } from "@/constant/constant";
+import { toast } from "react-toastify";
+
+interface EventDetails {
+  title: String;
+  category: String;
+  description: String;
+  Image: File | null;
+  URL: String;
+  startDateTime: Date;
+  endDateTime: Date;
+  price: String;
+  isFree: Boolean;
+  location: String;
+}
 
 const EventForm = () => {
+  const navigate = useNavigate();
+  const { register, handleSubmit, watch, setValue } = useForm<EventDetails>();
+  const isFree = watch("isFree");
+
+  // State variables for start and end dates
+  const [startDateTime, setStartDateTime] = useState<Date | null>(new Date());
+  const [endDateTime, setEndDateTime] = useState<Date | null>(new Date());
+
+  // State variable for Image
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+
+  const onSubmit: SubmitHandler<EventDetails> = async (data) => {
+    try {
+      if (!coverImage || !endDateTime || !startDateTime) {
+        toast.error("Required Information Missing", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        navigate("/events/create");
+      }
+
+      if (startDateTime && endDateTime && startDateTime > endDateTime) {
+        toast.error("Please Provide Valid TimeLines", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        navigate("/events/create");
+      }
+
+      data.startDateTime = startDateTime ? startDateTime : new Date();
+      data.endDateTime = endDateTime ? endDateTime : new Date();
+      data.Image = coverImage;
+
+      const res = await axios.post(
+        `${API_ENDPOINT}/event/create`,
+        {
+          data,
+        },
+        { withCredentials: true }
+      );
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    isFree && setValue("price", "0");
+  }, [isFree]);
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex items-center justify-between w-full">
         <div className="w-1/2 mx-2">
           <input
             type="text"
             className="input-field w-full"
             placeholder="Event Title"
+            {...register("title", { required: true })}
           />
         </div>
         <div className="w-1/2">
-          <select name="Category" id="" className="select-field w-full">
-            <option value="" className="select-item">
+          <select className="select-field w-full" {...register("category")}>
+            <option value="Javid" className="select-item">
               Javid
             </option>
             <option value="" className="select-item p-2 hover:bg-blue-400">
@@ -40,38 +117,52 @@ const EventForm = () => {
 
       <div className="flex">
         <textarea
-          name=""
           id=""
+          {...register("description", { required: true })}
           cols={30}
           rows={10}
           className="textarea w-1/2 m-2 rounded-lg"
         ></textarea>
         <div className="w-1/2">
-          <div className="w-full h-full m-2 bg-grey-50 rounded-lg flex items-center justify-evenly flex-col">
-            <input
-              type="file"
-              name="fileUpload"
-              id="fileUpload"
-              className="hidden"
+          {coverImage ? (
+            <img
+              src={
+                coverImage
+                  ? URL.createObjectURL(coverImage).toString()
+                  : undefined
+              }
+              alt="Image Preview"
+              className="w-full h-full m-2 rounded flex items-center justify-evenly"
             />
-            <div>
-              <img
-                src={UploadImg}
-                alt="Upload Image"
-                className="w-[110px] h-full"
+          ) : (
+            <div className="w-full h-full m-2 bg-grey-50 rounded-lg flex items-center justify-evenly flex-col">
+              <input
+                type="file"
+                id="fileUpload"
+                className="hidden"
+                onChange={(event) =>
+                  event.target?.files && setCoverImage(event?.target?.files[0])
+                }
               />
-            </div>
+              <div>
+                <img
+                  src={UploadImg}
+                  alt="Upload Image"
+                  className="w-[110px] h-full"
+                />
+              </div>
 
-            <div>
-              <div className="font-bold py-4 text-center">SVG,PNG,JPG</div>
-              <label
-                htmlFor="fileUpload"
-                className="cursor-pointer p-3 rounded-lg text-white react-datepicker__time-list-item--selected"
-              >
-                Select from Computer
-              </label>
+              <div>
+                <div className="font-bold py-4 text-center">SVG,PNG,JPG</div>
+                <label
+                  htmlFor="fileUpload"
+                  className="cursor-pointer p-3 rounded-lg text-white react-datepicker__time-list-item--selected"
+                >
+                  Select from Computer
+                </label>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -79,6 +170,7 @@ const EventForm = () => {
         <div className="flex justify-between h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
           <img src={LocationImg} alt="Location" width={24} height={24} />
           <input
+            {...register("location", { required: true })}
             placeholder="Event location or Online"
             className="w-full outline-none bg-grey-50 rounded"
           />
@@ -96,8 +188,12 @@ const EventForm = () => {
           />
           <p className="ml-3 whitespace-nowrap text-grey-600">Start Date:</p>
           <DatePicker
-            // selected={field.value}
-            onChange={() => console.log("Change")}
+            value={
+              startDateTime
+                ? new Date(startDateTime).toLocaleString("en-In")
+                : undefined
+            }
+            onChange={(date) => setStartDateTime(date)}
             showTimeSelect
             timeInputLabel="Time:"
             dateFormat="MM/dd/yyyy h:mm aa"
@@ -115,8 +211,12 @@ const EventForm = () => {
           />
           <p className="ml-3 whitespace-nowrap text-grey-600">End Date:</p>
           <DatePicker
-            // selected={field.value}
-            onChange={() => console.log("Change")}
+            value={
+              endDateTime
+                ? new Date(endDateTime).toLocaleString("en-In")
+                : undefined
+            }
+            onChange={(date) => setEndDateTime(date)}
             showTimeSelect
             timeInputLabel="Time:"
             dateFormat="MM/dd/yyyy h:mm aa"
@@ -137,6 +237,7 @@ const EventForm = () => {
           <input
             type="number"
             placeholder="Price"
+            {...register("price", { required: true })}
             className="w-full outline-none p-regular-16 border-0 bg-grey-50 outline-offset-0 focus:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           />
 
@@ -149,8 +250,7 @@ const EventForm = () => {
             </label>
             <input
               type="checkbox"
-              // onCheckedChange={field.onChange}
-              // checked={field.value}
+              {...register("isFree", { required: true })}
               id="isFree"
               className="mr-2 h-5 w-5 border-2 border-primary-500"
             />
@@ -162,6 +262,7 @@ const EventForm = () => {
 
           <input
             placeholder="URL"
+            {...register("URL", { required: true })}
             className="w-full bg-grey-50 outline-none px-2"
           />
         </div>

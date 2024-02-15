@@ -12,6 +12,19 @@ const Header = () => {
 
   const isAuthenticate = !!localStorage.getItem("userData");
 
+  const handleLogout = async () => {
+    localStorage.removeItem("userData");
+    const res = (
+      await axios.get(`${API_ENDPOINT}/users/logout`, {
+        withCredentials: true,
+      })
+    )?.data;
+
+    if (res.statusCode === 200) {
+      navigate("/");
+    }
+  };
+
   const handleLogin = async () => {
     const refreshToken = document.cookie.split("refreshToken=")[1];
     try {
@@ -56,7 +69,14 @@ const Header = () => {
         <div className="flex w-32 justify-end gap-3">
           <MobileNav />
           {isAuthenticate ? (
-            <></>
+            <Button
+              asChild
+              className="rounded-full cursor-pointer"
+              size="lg"
+              onClick={handleLogout}
+            >
+              <div>Logout</div>
+            </Button>
           ) : (
             <Button
               asChild
