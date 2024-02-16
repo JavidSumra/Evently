@@ -2,6 +2,7 @@ import Event from "../models/Event.model.js";
 import { AsyncHandler } from "../utils/AsyncHandler.util.js";
 import { APIResponse } from "../utils/APIResponse.util.js";
 import { APIError } from "../utils/APIError.util.js";
+import { uploadOnCloudinary } from "../utils/Cloudinary.util.js";
 
 const createEvent = AsyncHandler(async (req, res) => {
   try {
@@ -28,6 +29,16 @@ const createEvent = AsyncHandler(async (req, res) => {
       return res.status(402).json(new APIError("Required Field Missing", 402));
     }
 
+    const coverImagePath = req.files?.Image[0]?.path;
+
+    const coverImage = await uploadOnCloudinary(coverImagePath);
+
+    if (!coverImage) {
+      return res
+        .status(502)
+        .json(new APIError("Failed to Create Event CoverImage Required", 502));
+    }
+
     const createEvent = await Event.create({
       title,
       description,
@@ -38,6 +49,7 @@ const createEvent = AsyncHandler(async (req, res) => {
       category,
       isFree,
       organizer: req?.user?.id,
+      coverImage: coverImage?.url,
     });
 
     if (createEvent) {

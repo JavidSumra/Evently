@@ -1,10 +1,8 @@
+import "dotenv/config.js";
 import request from "supertest";
-import { connectDB } from "../src/DB/connectDB.js";
 import { app } from "../src/app.js";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-
-dotenv.config({ path: "../.env" });
+import fs from "fs";
 
 let server, agent, token;
 
@@ -51,16 +49,22 @@ describe("Evently test suite ", () => {
   });
 
   test("User Can Create Event", async () => {
-    let res = await agent.post("/api/v1/event/create").send({
-      title: "Test Event Title",
-      description: "Test Event Description",
-      startDateTime: "2024-02-09T10:00:00",
-      endDateTime: "2024-02-09T12:00:00",
-      location: "Event Location",
-      price: "Event Price",
-      category: "Event Category",
-      token,
-    });
+    // Read the image file as a Buffer
+    const imageBuffer = fs.readFileSync(__dirname + "/TEST_Image.png");
+
+    let res = await agent
+      .post("/api/v1/event/create")
+      .field({
+        title: "Test Event Title",
+        description: "Test Event Description",
+        startDateTime: "2024-02-09T10:00:00",
+        endDateTime: "2024-02-09T12:00:00",
+        location: "Event Location",
+        price: "Event Price",
+        category: "Event Category",
+        token,
+      })
+      .attach("Image", imageBuffer, "TEST_Image.png");
 
     expect(res.statusCode).toBe(200);
 

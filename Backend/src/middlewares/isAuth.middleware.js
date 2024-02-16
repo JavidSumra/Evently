@@ -10,8 +10,6 @@ export const isAuthenticate = AsyncHandler(async (req, _, next) => {
       req.headers["Authorization"]?.replace("Bearer ", "") ??
       req.body.token;
 
-    // console.log(token);
-
     if (!token) {
       throw new APIError("Unauthorize Request", 402);
     }
