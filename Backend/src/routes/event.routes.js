@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { isAuthenticate } from "../middlewares/isAuth.js";
+import { isAuthenticate } from "../middlewares/isAuth.middleware.js";
 import {
   createEvent,
   deleteEvent,
@@ -8,9 +8,17 @@ import {
   updateEvent,
 } from "../controllers/Event.controller.js";
 
+import { upload } from "../middlewares/multer.middleware.js";
+
 const router = Router();
 
-router.route("/create").post(isAuthenticate, createEvent);
+router
+  .route("/create")
+  .post(
+    isAuthenticate,
+    upload.fields([{ name: "Image", maxCount: 1 }]),
+    createEvent
+  );
 
 router.route("/details").get(isAuthenticate, getAllEvents);
 router.route("/details/:id").get(isAuthenticate, getEventDetailById);
