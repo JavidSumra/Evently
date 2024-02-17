@@ -29,14 +29,15 @@ const createEvent = AsyncHandler(async (req, res) => {
       return res.status(402).json(new APIError("Required Field Missing", 402));
     }
 
-    const coverImagePath = req.files?.Image[0]?.path;
+    console.log(req.files.Image);
+    const coverImagePath = await req.files?.Image[0]?.path;
 
     const coverImage = await uploadOnCloudinary(coverImagePath);
 
-    if (!coverImage) {
+    if (!coverImagePath) {
       return res
         .status(502)
-        .json(new APIError("Failed to Create Event CoverImage Required", 502));
+        .json(new APIError("Failed to Create Event Cover Image Required", 502));
     }
 
     const createEvent = await Event.create({

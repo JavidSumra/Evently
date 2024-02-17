@@ -20,8 +20,8 @@ router
     createEvent
   );
 
-router.route("/details").get(isAuthenticate, getAllEvents);
-router.route("/details/:id").get(isAuthenticate, getEventDetailById);
+router.route("/details").get(getAllEvents);
+router.route("/details/:id").get(getEventDetailById);
 
 router.route("/update/:id").put(isAuthenticate, updateEvent);
 

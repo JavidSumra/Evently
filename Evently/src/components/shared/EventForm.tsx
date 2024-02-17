@@ -71,18 +71,47 @@ const EventForm = () => {
         navigate("/events/create");
       }
 
+      setValue("Image", coverImage);
+
       data.startDateTime = startDateTime ? startDateTime : new Date();
       data.endDateTime = endDateTime ? endDateTime : new Date();
-      data.Image = coverImage;
 
-      const res = await axios.post(
-        `${API_ENDPOINT}/event/create`,
-        {
-          data,
-        },
-        { withCredentials: true }
-      );
+      const res = (
+        await axios.post(`${API_ENDPOINT}/event/create`, data, {
+          headers: {
+            "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
+          },
+          withCredentials: true,
+        })
+      )?.data;
+
       console.log(res);
+
+      if (res.success) {
+        toast.success("Event Created Successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        navigate("/");
+      } else {
+        toast.error("Failed to Create Event", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        navigate("/events/create");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -237,7 +266,7 @@ const EventForm = () => {
           <input
             type="number"
             placeholder="Price"
-            {...register("price", { required: true })}
+            {...register("price")}
             className="w-full outline-none p-regular-16 border-0 bg-grey-50 outline-offset-0 focus:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           />
 

@@ -23,6 +23,11 @@ const Header = () => {
     if (res.statusCode === 200) {
       navigate("/");
     }
+
+    if (!res?.success) {
+      localStorage.removeItem("authToken");
+      navigate("/");
+    }
   };
 
   const handleLogin = async () => {
@@ -66,8 +71,7 @@ const Header = () => {
           <NavItems />
         </nav>
 
-        <div className="flex w-32 justify-end gap-3">
-          <MobileNav />
+        <div className="flex items-center w-36 justify-end gap-3">
           {isAuthenticate ? (
             <Button
               asChild
@@ -87,6 +91,7 @@ const Header = () => {
               <div>Login</div>
             </Button>
           )}
+          <MobileNav />
         </div>
       </div>
     </header>

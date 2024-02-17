@@ -110,10 +110,10 @@ const loginUser = AsyncHandler(async (req, res) => {
   res
     .status(200)
     .cookie("authToken", accessToken, {
-      maxAge: 604800000, // 7 Days
+      maxAge: 86400000, // 1 Days
     })
     .cookie("refreshToken", refreshToken, {
-      maxAge: 2592000000, //30 Days
+      maxAge: 1296000000, //15 Days
     })
     .json(new APIResponse("User Logged In Successfully", 200, loggedInUser));
 });
