@@ -1,44 +1,44 @@
 name: Event Management System
 
 on:
-  push:
+  push: # Trigger the workflow on push events to the specified branches
     branches:
       - main
       - dev
-  pull_request:
+  pull_request: # Trigger the workflow on pull requests targeting the specified branches
     branches:
       - dev
 
 jobs:
-  run-tests:
-    runs-on: ubuntu-latest
+  run-unit-tests:
+    runs-on: ubuntu-latest # Define the operating system for the job
     strategy:
-      matrix:
+      matrix: # Define a matrix for running tests with different configurations
         node-version: [20.x]
         mongodb-version: ["6.0"]
 
     steps:
-      - name: Git checkout
+      - name: Checkout code # Step to checkout the repository code
         uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Use Node.js ${{ matrix.node-version }} # Step to set up Node.js environment
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Start MongoDB
+      - name: Start MongoDB # Step to start MongoDB service
         uses: supercharge/mongodb-github-action@1.10.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: test-rs
           mongodb-port: 27017
 
-      - name: Install dependencies
+      - name: Install backend dependencies
         run: |
           cd Backend
-          npm i
+          npm ci
 
-      - name: Run tests
+      - name: Run backend tests
         env:
           SALT_ROUND: ${{ secrets.SALT_ROUND }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -47,33 +47,32 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-          CI: true
         run: |
-          cd Backend 
+          cd Backend
           npm run test
 
   deploy-to-render:
-    runs-on: ubuntu-latest
-    needs: run-tests
-    if: ${{ needs.run-tests.result == 'success' }} # Only deploy if tests pass
+    runs-on: ubuntu-latest # Define the operating system for the job
+    needs: run-unit-tests
+    if: ${{ needs.run-unit-tests.result == 'success' }} # Condition to run the job only if run-unit-tests job succeeds
     steps:
-      - name: Trigger deployment webhook
+      - name: Trigger deployment webhook #trigger deployment webhook
         run: curl -X GET -d '{}' ${{ secrets.DEPLOYMENT_WEBHOOK_URL }}
 
   deploy-to-netlify:
     runs-on: ubuntu-latest
-    needs: run-tests
-    if: ${{ needs.run-tests.result == 'success' }} # Only deploy if tests pass
+    needs: run-unit-tests
+    if: ${{ needs.run-unit-tests.result == 'success' }} # Condition to run the job only if run-unit-tests job succeeds
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Install frontend dependencies # Step to install frontend dependencies
         run: |
           cd Evently
-          npm install
+          npm ci
 
-      - name: Build
+      - name: Build frontend # Step to build frontend
         run: |
           cd Evently
           npm run build
@@ -84,10 +83,11 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: |
           cd Evently
-          npx netlify-cli deploy --prod --dir=./build --message "${{ steps.commit_message.outputs.message }}"
+          npx netlify-cli deploy --prod --dir=./build --message "Evently deployment"
 
   send-slack-notification:
     runs-on: ubuntu-latest
+    needs: run-unit-tests
     steps:
       - name: Send Slack notification
         uses: rtCamp/action-slack-notify@v2
@@ -95,6 +95,7 @@ jobs:
           status: ${{ job.status }}
           mention: "here"
           author_name: "GitHub Actions"
-          fields: repo,message,commit,author,workflow,job,took
+          text: |
+            Workflow *Evently* tests completed successfully. For More Details Check Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
