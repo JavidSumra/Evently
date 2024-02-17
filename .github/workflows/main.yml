@@ -52,56 +52,21 @@ jobs:
           cd Backend 
           npm run test
 
-      - name: Upload test logs
-        if: always() # Ensure logs are always uploaded
+      - name: Upload action logs
         uses: actions/upload-artifact@v2
         with:
-          name: test-logs
-          path: Backend/path/to/logs
+          name: action-logs
+          path: ${{ github.workspace }}/Backend/path/to/logs
 
-  deploy-to-render:
+  send-action-logs-to-slack:
     runs-on: ubuntu-latest
     needs: run-tests
-    if: ${{ needs.run-tests.result == 'success' }} # Only deploy if tests pass
+    if: ${{ always() }}
     steps:
-      - name: Trigger deployment webhook
-        run: curl -X GET -d '{}' ${{ secrets.DEPLOYMENT_WEBHOOK_URL }}
-
-  deploy-to-netlify:
-    runs-on: ubuntu-latest
-    needs: run-tests
-    if: ${{ needs.run-tests.result == 'success' }} # Only deploy if tests pass
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: |
-          cd Evently
-          npm install
-
-      - name: Build
-        run: |
-          cd Evently
-          npm run build
-
-      - name: Deploy to Netlify
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: |
-          cd Evently
-          npx netlify-cli deploy --prod --dir=./build --message "${{ steps.commit_message.outputs.message }}"
-
-  send-slack-notification:
-    runs-on: ubuntu-latest
-    needs: [run-tests, deploy-to-netlify, deploy-to-render]
-    if: ${{ needs.run-tests.result == 'failure' }} # Only run if tests fail
-    steps:
-      - name: Download test logs artifact
+      - name: Download action logs artifact
         uses: actions/download-artifact@v2
         with:
-          name: test-logs
+          name: action-logs
           path: logs
 
       - name: Send Slack notification with logs
@@ -111,6 +76,6 @@ jobs:
           mention: "here"
           author_name: "GitHub Actions"
           fields: repo,message,commit,author,workflow,job,took
-          files: logs/*.log
+          files: logs/*
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
