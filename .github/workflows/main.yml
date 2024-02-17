@@ -53,6 +53,7 @@ jobs:
           npm run test
 
       - name: Upload test logs
+        if: always() # Ensure logs are always uploaded
         uses: actions/upload-artifact@v2
         with:
           name: test-logs
@@ -94,7 +95,8 @@ jobs:
 
   send-slack-notification:
     runs-on: ubuntu-latest
-    needs: run-tests
+    needs: [run-tests, deploy-to-netlify, deploy-to-render]
+    if: ${{ needs.run-tests.result == 'failure' }} # Only run if tests fail
     steps:
       - name: Download test logs artifact
         uses: actions/download-artifact@v2
