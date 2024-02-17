@@ -1,32 +1,32 @@
 name: Event Management System
 
 on:
-  push:
+  push: # Trigger the workflow on push events to the specified branches
     branches:
       - main
       - dev
-  pull_request:
+  pull_request: # Trigger the workflow on pull requests targeting the specified branches
     branches:
       - dev
 
 jobs:
   run-unit-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Define the operating system for the job
     strategy:
-      matrix:
+      matrix: # Define a matrix for running tests with different configurations
         node-version: [20.x]
         mongodb-version: ["6.0"]
 
     steps:
-      - name: Checkout code
+      - name: Checkout code # Step to checkout the repository code
         uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }} # Step to set up Node.js environment
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Start MongoDB
+      - name: Start MongoDB # Step to start MongoDB service
         uses: supercharge/mongodb-github-action@1.10.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
@@ -52,27 +52,27 @@ jobs:
           npm run test
 
   deploy-to-render:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Define the operating system for the job
     needs: run-unit-tests
-    if: ${{ needs.run-unit-tests.result == 'success' }} # Only deploy if tests pass
+    if: ${{ needs.run-unit-tests.result == 'success' }} # Condition to run the job only if run-unit-tests job succeeds
     steps:
-      - name: Trigger deployment webhook
+      - name: Trigger deployment webhook #trigger deployment webhook
         run: curl -X GET -d '{}' ${{ secrets.DEPLOYMENT_WEBHOOK_URL }}
 
   deploy-to-netlify:
     runs-on: ubuntu-latest
     needs: run-unit-tests
-    if: ${{ needs.run-unit-tests.result == 'success' }} # Only deploy if tests pass
+    if: ${{ needs.run-unit-tests.result == 'success' }} # Condition to run the job only if run-unit-tests job succeeds
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install frontend dependencies
+      - name: Install frontend dependencies # Step to install frontend dependencies
         run: |
           cd Evently
           npm ci
 
-      - name: Build frontend
+      - name: Build frontend # Step to build frontend
         run: |
           cd Evently
           npm run build
@@ -94,7 +94,44 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         run: |
           if [ "${{ needs.run-unit-tests.result }}" == 'success' ]; then
-            curl -X POST -H 'Content-type: application/json' --data '{"text":"Workflow *Evently* tests completed successfully. \nCheck the logs for details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' ${{ secrets.SLACK_WEBHOOK }}
+            curl -X POST -H 'Content-type: application/json' --data '{
+              "text": "Workflow *Evently* tests completed successfully.\For More Details Check Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "attachments": [
+                {
+                  "color": "good",  # Set the color based on success or failure
+                  "fields": [  # Define fields for the Slack message attachment
+                    {"title": "Status", "value": "${{ job.status }}", "short": true},
+                    {"title": "Mention", "value": "here", "short": true},
+                    {"title": "Author Name", "value": "GitHub Actions", "short": true},
+                    {"title": "Repo", "value": "${{ github.repository }}", "short": true},
+                    {"title": "Message", "value": "${{ github.event.head_commit.message }}", "short": true},
+                    {"title": "Commit", "value": "${{ github.sha }}", "short": true},
+                    {"title": "Author", "value": "${{ github.actor }}", "short": true},
+                    {"title": "Workflow", "value": "${{ github.workflow }}", "short": true},
+                    {"title": "Job", "value": "${{ github.job }}", "short": true},
+                    {"title": "Took", "value": "${{ job.completed_at }}"}
+                  ]
+                }
+              ]
+            }' $SLACK_WEBHOOK
           else
-            curl -X POST -H 'Content-type: application/json' --data '{"text":"Workflow *Evently* tests completed Failed. \nCheck the logs for details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' ${{ secrets.SLACK_WEBHOOK }}
-          fi
+            curl -X POST -H 'Content-type: application/json' --data '{
+              "text": "Workflow *Evently* tests completed successfully.\For More Details Check Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "attachments": [
+                {
+                  "color": "danger",  # Set the color based on success or failure
+                  "fields": [  # Define fields for the Slack message attachment
+                    {"title": "Status", "value": "${{ job.status }}", "short": true},
+                    {"title": "Mention", "value": "here", "short": true},
+                    {"title": "Author Name", "value": "GitHub Actions", "short": true},
+                    {"title": "Repo", "value": "${{ github.repository }}", "short": true},
+                    {"title": "Message", "value": "${{ github.event.head_commit.message }}", "short": true},
+                    {"title": "Commit", "value": "${{ github.sha }}", "short": true},
+                    {"title": "Author", "value": "${{ github.actor }}", "short": true},
+                    {"title": "Workflow", "value": "${{ github.workflow }}", "short": true},
+                    {"title": "Job", "value": "${{ github.job }}", "short": true},
+                    {"title": "Took", "value": "${{ job.completed_at }}"}
+                  ]
+                }
+              ]
+            }' $SLACK_WEBHOOK
