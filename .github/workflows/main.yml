@@ -90,49 +90,12 @@ jobs:
     needs: [run-unit-tests, deploy-to-netlify, deploy-to-render]
     steps:
       - name: Send Slack notification
-        run: |
-          if [ '${{ needs.run-unit-tests.result }}' == 'success' ]; then
-            curl -X POST -H 'Content-type: application/json' --data '{
-              "text": "Workflow *Evently* tests completed successfully.\For More Details Check Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-              "channel": "project",
-              "attachments": [
-                {
-                  "color": "good",  # Set the color based on success or failure
-                  "fields": [  # Define fields for the Slack message attachment
-                    {"title": "Status", "value": "${{ job.status }}", "short": true},
-                    {"title": "Mention", "value": "here", "short": true},
-                    {"title": "Author Name", "value": "GitHub Actions", "short": true},
-                    {"title": "Repo", "value": "${{ github.repository }}", "short": true},
-                    {"title": "Message", "value": "${{ github.event.head_commit.message }}", "short": true},
-                    {"title": "Commit", "value": "${{ github.sha }}", "short": true},
-                    {"title": "Author", "value": "${{ github.actor }}", "short": true},
-                    {"title": "Workflow", "value": "${{ github.workflow }}", "short": true},
-                    {"title": "Job", "value": "${{ github.job }}", "short": true},
-                    {"title": "Took", "value": "${{ job.completed_at }}"}
-                  ]
-                }
-              ]
-            }' ${{ secrets.SLACK_WEBHOOK }}
-          else
-            curl -X POST -H 'Content-type: application/json' --data '{
-              "text": "Workflow *Evently* tests completed successfully.\For More Details Check Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-              "channel": "project",
-              "attachments": [
-                {
-                  "color": "danger",  # Set the color based on success or failure
-                  "fields": [  # Define fields for the Slack message attachment
-                    {"title": "Status", "value": "${{ job.status }}", "short": true},
-                    {"title": "Mention", "value": "here", "short": true},
-                    {"title": "Author Name", "value": "GitHub Actions", "short": true},
-                    {"title": "Repo", "value": "${{ github.repository }}", "short": true},
-                    {"title": "Message", "value": "${{ github.event.head_commit.message }}", "short": true},
-                    {"title": "Commit", "value": "${{ github.sha }}", "short": true},
-                    {"title": "Author", "value": "${{ github.actor }}", "short": true},
-                    {"title": "Workflow", "value": "${{ github.workflow }}", "short": true},
-                    {"title": "Job", "value": "${{ github.job }}", "short": true},
-                    {"title": "Took", "value": "${{ job.completed_at }}"}
-                  ]
-                }
-              ]
-            }' ${{ secrets.SLACK_WEBHOOK }}
-          fi
+        uses: rtCamp/action-slack-notify@v2
+        with:
+          status: ${{ job.status }}
+          mention: "here"
+          author_name: "GitHub Actions"
+          text: |
+            Workflow *Evently* tests completed successfully. For More Details Check Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
