@@ -18,11 +18,11 @@ jobs:
         mongodb-version: ["6.0"]
 
     steps:
-      - name: Git checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -33,12 +33,12 @@ jobs:
           mongodb-replica-set: test-rs
           mongodb-port: 27017
 
-      - name: Install dependencies
+      - name: Install backend dependencies
         run: |
           cd Backend
-          npm i
+          npm ci
 
-      - name: Run tests
+      - name: Run backend tests
         env:
           SALT_ROUND: ${{ secrets.SALT_ROUND }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -47,9 +47,8 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-          CI: true
         run: |
-          cd Backend 
+          cd Backend
           npm run test
 
   deploy-to-render:
@@ -68,23 +67,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
         run: |
           cd Evently
-          npm install
+          npm ci
 
-      - name: Build
+      - name: Build frontend
         run: |
           cd Evently
           npm run build
 
       - name: Deploy to Netlify
         env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLFY_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: |
           cd Evently
-          npx netlify-cli deploy --prod --dir=./build --message "${{ steps.commit_message.outputs.message }}"
+          npx netlify-cli deploy --prod --dir=./build --message "Evently deployment"
 
   send-slack-notification:
     runs-on: ubuntu-latest
@@ -93,16 +92,9 @@ jobs:
       - name: Send Slack notification
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        uses: rtCamp/action-slack-notify@v2
-        with:
-          status: ${{ job.status }}
-          mention: "here"
-          author_name: "GitHub Actions"
-          fields: repo,message,commit,author,workflow,job,took
-          logs:  |
-          if [[ ${{ needs.run-unit-tests.result }} == 'success']]; then
+        run: |
+          if [ "${{ needs.run-unit-tests.result }}" == 'success' ]; then
             curl -X POST -H 'Content-type: application/json' --data '{"text":"Workflow *Evently* tests completed successfully. \nCheck the logs for details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' $SLACK_WEBHOOK_URL
           else
             curl -X POST -H 'Content-type: application/json' --data '{"text":"Workflow *Evently* tests completed Failed. \nCheck the logs for details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' $SLACK_WEBHOOK_URL
           fi
-       
