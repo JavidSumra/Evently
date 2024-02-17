@@ -52,30 +52,66 @@ jobs:
           cd Backend 
           npm run test
 
-      - name: Upload action logs
-        uses: actions/upload-artifact@v2
-        with:
-          name: action-logs
-          path: ${{ github.workspace }}/Backend/path/to/logs
-
-  send-action-logs-to-slack:
+  deploy-to-render:
     runs-on: ubuntu-latest
     needs: run-tests
-    if: ${{ always() }}
+    if: ${{ needs.run-tests.result == 'success' }} # Only deploy if tests pass
     steps:
-      - name: Download action logs artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: action-logs
-          path: logs
+      - name: Trigger deployment webhook
+        run: curl -X GET -d '{}' ${{ secrets.DEPLOYMENT_WEBHOOK_URL }}
 
-      - name: Send Slack notification with logs
-        uses: rtCamp/action-slack-notify@v2
-        with:
-          status: ${{ job.status }}
-          mention: "here"
-          author_name: "GitHub Actions"
-          fields: repo,message,commit,author,workflow,job,took
-          files: logs/*
+  deploy-to-netlify:
+    runs-on: ubuntu-latest
+    needs: run-tests
+    if: ${{ needs.run-tests.result == 'success' }} # Only deploy if tests pass
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          cd Evently
+          npm install
+
+      - name: Build
+        run: |
+          cd Evently
+          npm run build
+
+      - name: Deploy to Netlify
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          cd Evently
+          npx netlify-cli deploy --prod --dir=./build --message "${{ steps.commit_message.outputs.message }}"
+
+  send-slack-notification:
+    runs-on: ubuntu-latest
+    needs: [run-tests, deploy-to-netlify, deploy-to-render]
+    if: always() # Always run this job, regardless of whether tests pass or fail
+    steps:
+      - name: Fetch logs
+        if: ${{ always() }} # Ensure this step always runs
+        id: get_logs
+        run: |
+          logs=$(curl -s -X GET \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/logs")
+          echo "::set-output name=logs::$logs"
+
+      - name: Parse logs and send Slack notification
+        if: ${{ always() }} # Ensure this step always runs
+        run: |
+          # Parse logs to extract relevant information
+          # For demonstration purposes, let's assume the logs are stored in the $logs variable
+
+          # Include the parsed logs in the Slack notification message
+          if [[ ${{ job.status }} == 'success' ]]; then
+            message="Workflow *Evently* tests completed successfully. \nCheck the logs for details: $logs"
+          else
+            message="Workflow *Evently* tests failed. \nCheck the logs for details: $logs"
+          fi
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
