@@ -141,6 +141,6 @@ describe("Evently test suite ", () => {
 
     res = await agent.delete(`/api/v1/users/delete/${id}`).send({ token });
 
-    expect(res.statusCode).toBe(202);
+    expect(res.statusCode).toBe(200);
   });
 });
