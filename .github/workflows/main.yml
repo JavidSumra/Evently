@@ -94,7 +94,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         run: |
           if [ "${{ needs.run-unit-tests.result }}" == 'success' ]; then
-            curl -X POST -H 'Content-type: application/json' --data '{"text":"Workflow *Evently* tests completed successfully. \nCheck the logs for details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' $SLACK_WEBHOOK_URL
+            curl -X POST -H 'Content-type: application/json' --data '{"text":"Workflow *Evently* tests completed successfully. \nCheck the logs for details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' ${{ secrets.SLACK_WEBHOOK }}
           else
-            curl -X POST -H 'Content-type: application/json' --data '{"text":"Workflow *Evently* tests completed Failed. \nCheck the logs for details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' $SLACK_WEBHOOK_URL
+            curl -X POST -H 'Content-type: application/json' --data '{"text":"Workflow *Evently* tests completed Failed. \nCheck the logs for details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' ${{ secrets.SLACK_WEBHOOK }}
           fi
