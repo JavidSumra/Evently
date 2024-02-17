@@ -96,6 +96,7 @@ jobs:
           if [ '${{ needs.run-unit-tests.result }}' == 'success' ]; then
             curl -X POST -H 'Content-type: application/json' --data '{
               "text": "Workflow *Evently* tests completed successfully.\For More Details Check Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "channel": "project",
               "attachments": [
                 {
                   "color": "good",  # Set the color based on success or failure
@@ -117,6 +118,7 @@ jobs:
           else
             curl -X POST -H 'Content-type: application/json' --data '{
               "text": "Workflow *Evently* tests completed successfully.\For More Details Check Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "channel": "project",
               "attachments": [
                 {
                   "color": "danger",  # Set the color based on success or failure
