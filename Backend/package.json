@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server.js -e .js",
+    "dev": "pm2 start ecosystem.config.cjs",
     "test": "jest --detectOpenHandles"
   },
   "author": "JavidSumra",
@@ -39,6 +39,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
     "multer": "^1.4.5-lts.1",
+    "pm2": "^5.3.1",
     "supertest": "^6.3.4"
   }
 }
