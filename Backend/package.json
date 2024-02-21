@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "pm2 start ecosystem.config.cjs",
+    "dev": "pm2 start ecosystem.config.cjs --wait-ready",
     "test": "jest --detectOpenHandles"
   },
   "author": "JavidSumra",
