@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "npx pm2 start server.js --name 'Evently' -i max -l ./out.log -e ./err.log --wait-ready",
+    "dev": "npx pm2 start server.js -i max",
     "test": "jest --detectOpenHandles"
   },
   "author": "JavidSumra",
