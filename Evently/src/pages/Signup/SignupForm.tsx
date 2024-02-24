@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import EventlyLogo from "../../assets/images/logo.svg";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-toastify";
-import { API_ENDPOINT } from "@/constant/constant";
+import { API_ENDPOINT } from "../../constant/constant";
 import axios from "axios";
 
 interface UserInputs {

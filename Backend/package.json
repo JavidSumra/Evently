@@ -5,7 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "pm2 start ecosystem.config.cjs",
+    "dev": "npx pm2 start server.js --name 'Evently' -i 4 --wait-ready -o ./out.log -l ./err.log",
+    "start": "nodemon server.js -e .js",
     "test": "jest --detectOpenHandles"
   },
   "author": "JavidSumra",
