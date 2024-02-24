@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "npx pm2 kill && npx pm2 start server.js --name 'Evently' -i 4 --wait-ready -o ./out.log -l ./err.log && npx pm2 ls",
+    "dev": "npx pm2 start server.js --name 'Evently' -i 4 --wait-ready -o ./out.log -l ./err.log || npx pm2 ls",
     "start": "nodemon server.js -e .js",
     "test": "jest --detectOpenHandles"
   },
