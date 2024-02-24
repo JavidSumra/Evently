@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "npx pm2-runtime link upbfuf05n1b5198 4qu3cyagfi0a0kz && npx pm2-runtime start server.js --name 'Evently' -i 4",
+    "dev": "npx pm2 start server.js --name 'Evently' -i 4 --wait-ready --no-autorestart -l ./err.log",
     "start": "nodemon server.js -e .js",
     "test": "jest --detectOpenHandles"
   },
