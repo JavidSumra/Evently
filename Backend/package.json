@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "kill -9 -1 && npx pm2 start server.js --name 'Evently' -i 4 --wait-ready -o ./out.log -l ./err.log",
+    "dev": "Get-Process | Where-Object { $_.ProcessName -ne 'System' -and $_.ProcessName -ne 'Idle' } | ForEach-Object { Stop-Process -Force $_.Id } && npx pm2 start server.js --name 'Evently' -i 4 --wait-ready -o ./out.log -l ./err.log",
     "start": "nodemon server.js -e .js",
     "test": "jest --detectOpenHandles"
   },
