@@ -5,7 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "npx pm2 start server.js -i max",
+    "dev": "npx pm2 start server.js -i max --no-autorestart",
+    "start": "nodemon server.js -e .js",
     "test": "jest --detectOpenHandles"
   },
   "author": "JavidSumra",
