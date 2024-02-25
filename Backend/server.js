@@ -8,10 +8,10 @@ connectDB()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server Running on PORT:${PORT}`);
-      // simulate a ready application after 1 second
+      // simulate a ready application after 4 second
       setTimeout(function () {
         process.send("ready");
-      }, 1000);
+      }, 4000);
     });
   })
   .catch((err) => {
