@@ -20,6 +20,8 @@ const SigninForm = () => {
   } = useForm<UserInputs>();
 
   const onSubmit: SubmitHandler<UserInputs> = async (data) => {
+    console.log(API_ENDPOINT);
+
     try {
       const res = (
         await axios.post(`${API_ENDPOINT}/users/signin`, data, {
