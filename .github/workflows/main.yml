@@ -83,7 +83,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: |
           cd Evently
-          npx netlify-cli deploy --prod --dir=./build --message "Evently deployment"
+          npx netlify-cli env:set VITE_API_ENDPOINT value https://evently-backend-jiec.onrender.com/api/v1 deploy --trigger
 
   send-slack-notification:
     runs-on: ubuntu-latest
