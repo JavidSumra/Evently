@@ -77,6 +77,10 @@ jobs:
           cd Evently
           npm run build
 
+      - name: Get last commit message
+        id: commit_message
+        run: echo "::set-output name=message::$(git log --format=%B -n 1 $GITHUB_SHA)"
+
       - name: Deploy to Netlify
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
@@ -84,7 +88,7 @@ jobs:
         run: |
           cd Evently
           npx netlify-cli env:set VITE_API_ENDPOINT https://evently-backend-jiec.onrender.com/api/v1 
-          npx netlify-cli deploy --prod --dir=build --message "Evently deployment"
+          npx netlify-cli deploy --prod --dir=build --message "${{ steps.commit_message.outputs.message }}"
 
   send-slack-notification:
     runs-on: ubuntu-latest
