@@ -3,7 +3,7 @@ import { APIError } from "../utils/APIError.util.js";
 import jwt from "jsonwebtoken";
 import { AsyncHandler } from "../utils/AsyncHandler.util.js";
 
-export const isAuthenticate = AsyncHandler(async (req, _, next) => {
+export const isAuthenticate = AsyncHandler(async (req, res, next) => {
   try {
     const token =
       req.cookies.authToken ??

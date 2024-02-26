@@ -15,6 +15,9 @@ const uploadOnCloudinary = async (localFilePath) => {
     const response = await cloudinary.uploader.upload(localFilePath, {
       upload_preset: "evently_wd401",
       resource_type: "auto",
+      width: 800,
+      height: 600,
+      crop: "scale",
     });
 
     // removing file from public/temp on successful upload
