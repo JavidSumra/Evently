@@ -5,16 +5,32 @@ import { Button } from "@/components/ui/button";
 // import { SearchParamProps } from "@/types";
 // import { Link } from "react-router-dom";
 import HomeImage from "../../assets/images/hero.png";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_ENDPOINT } from "@/constant/constant";
 
 export default function Home() {
-  //   const page = Number(searchParams?.page) || 1;
+  const [events, setEvents] = useState([]);
 
-  //   const events = await getAllEvents({
-  //     query: searchText,
-  //     category,
-  //     page,
-  //     limit: 6,
-  //   });
+  const eventsData = async () => {
+    try {
+      const res = (
+        await axios.get(`${API_ENDPOINT}/event/details`, {
+          withCredentials: true,
+        })
+      )?.data;
+
+      if (res?.success) {
+        setEvents(res?.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    eventsData();
+  }, []);
 
   return (
     <>
@@ -57,7 +73,7 @@ export default function Home() {
         </div>
 
         <Collection
-          data={[]}
+          data={events}
           emptyTitle="No Events Found"
           emptyStateSubtext="Come back later"
           collectionType="All_Events"

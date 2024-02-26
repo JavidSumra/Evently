@@ -2,6 +2,7 @@
 import { DeleteConfirmation } from "./DeleteConfirmation";
 import { Link } from "react-router-dom";
 import EditImg from "../../assets/icons/edit.svg";
+import ArraowImg from "../../assets/icons/arrow.svg";
 
 // type CardProps = {
 //   event: IEvent;
@@ -11,69 +12,78 @@ import EditImg from "../../assets/icons/edit.svg";
 
 const Card = ({ event, hasOrderLink, hidePrice }: any) => {
   console.log(event, hasOrderLink, hidePrice);
+
+  const dateTimeOptions: Intl.DateTimeFormatOptions = {
+    weekday: "short", // abbreviated weekday name (e.g., 'Mon')
+    month: "short", // abbreviated month name (e.g., 'Oct')
+    day: "numeric", // numeric day of the month (e.g., '25')
+    hour: "numeric", // numeric hour (e.g., '8')
+    minute: "numeric", // numeric minute (e.g., '30')
+    hour12: true, // use 12-hour clock (true) or 24-hour clock (false)
+  };
+
   //   const { sessionClaims } = auth();
   //   const userId = sessionClaims?.userId as string;
 
   //   const isEventCreator = userId === event.organizer._id.toString();
 
   return (
-    <div className="group relative flex min-h-[380px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]">
+    <div className="group relative flex min-h-[300px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]">
       <Link
         to={""}
-        // style={{ backgroundImage: `url(${event.imageUrl})` }}
-        className="flex-center flex-grow bg-gray-50 bg-cover bg-center text-grey-500"
+        style={{ backgroundImage: `url(${event.coverImage})` }}
+        className="flex-center flex-grow bg-gray-50 bg-cover bg-center text-grey-500 rounded-t"
       />
       {/* IS EVENT CREATOR ... */}
 
       {/* {isEventCreator && !hidePrice && ( */}
-      <div className="absolute right-2 top-2 flex flex-col gap-4 rounded-xl bg-white p-3 shadow-sm transition-all">
-        <Link to={`/events/update`}>
-          <img src={EditImg} alt="edit" width={20} height={20} />
-        </Link>
+      <div className="hidden group-hover:flex">
+        <div className="absolute right-2 top-2 flex flex-col gap-4 rounded-xl bg-white p-3 shadow-sm transition-all">
+          <Link to={`/events/update`}>
+            <img src={EditImg} alt="edit" width={20} height={20} />
+          </Link>
 
-        <DeleteConfirmation eventId={""} />
+          <DeleteConfirmation eventId={event?._id} />
+        </div>
       </div>
       {/* )} */}
 
       <div className="flex min-h-[230px] flex-col gap-3 p-5 md:gap-4">
-        {/* {!hidePrice && ( */}
-        <div className="flex gap-2">
-          <span className="p-semibold-14 w-min rounded-full bg-green-100 px-4 py-1 text-green-60">
-            {/* {event.isFree ? "FREE" : `$${event.price}`} */}
-          </span>
-          <p className="p-semibold-14 w-min rounded-full bg-grey-500/10 px-4 py-1 text-grey-500 line-clamp-1">
-            {/* {event.category.name} */}
-          </p>
-        </div>
-        {/* )} */}
+        {!hidePrice && (
+          <div className="flex gap-2">
+            <span className="p-semibold-14 w-min rounded-full bg-green-100 px-4 py-1 text-green-60">
+              {event.isFree ? "FREE" : `$${event.price}`}
+            </span>
+            <p className="p-semibold-14 w-min rounded-full bg-grey-500/10 px-4 py-1 text-grey-500 line-clamp-1">
+              {event.category}
+            </p>
+          </div>
+        )}
 
         <p className="p-medium-16 p-medium-18 text-grey-500">
-          {/* {formatDateTime(event.startDateTime).dateTime} */}
+          {new Date(event.startDateTime).toLocaleString(
+            "en-US",
+            dateTimeOptions
+          )}
         </p>
 
         <Link to={`/events/`}>
-          <p className="p-medium-16 md:p-medium-20 line-clamp-2 flex-1 text-black">
-            {/* {event.title}  */}
-            Test Title
+          <p className="line-clamp-2 flex-1 text-black font-bold">
+            {event.title}
           </p>
         </Link>
 
         <div className="flex-between w-full">
           <p className="p-medium-14 md:p-medium-16 text-grey-600">
-            {/* {event.organizer.firstName} {event.organizer.lastName} */}
+            {event.organizer.firstName} {event.organizer.lastName}
           </p>
 
-          {/* {hasOrderLink && ( */}
-          <Link to={`/orders?eventId=`} className="flex gap-2">
-            <p className="text-primary-500">Order Details</p>
-            {/* <Image
-                src="/assets/icons/arrow.svg"
-                alt="search"
-                width={10}
-                height={10}
-              /> */}
-          </Link>
-          {/* )} */}
+          {hasOrderLink && (
+            <Link to={`/orders?eventId=`} className="flex gap-2">
+              <p className="text-primary-500">Order Details</p>
+              <img src={ArraowImg} alt="search" width={10} height={10} />
+            </Link>
+          )}
         </div>
       </div>
     </div>

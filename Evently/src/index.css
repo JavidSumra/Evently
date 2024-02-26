@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+*{
+  font-style: "Poppins";
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
