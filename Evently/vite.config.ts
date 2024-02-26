@@ -50,6 +50,7 @@ export default ({ mode }: any) => {
     ],
     define: {
       "process.env.NODE_ENV": `"${mode}"`,
+      "process.env.VITE_API_ENDPOINT": process.env.VITE_API_ENDPOINT,
     },
     resolve: {
       alias: {
