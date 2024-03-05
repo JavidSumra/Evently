@@ -32,4 +32,9 @@ app.use(express.static("public"));
 app.use("/api/v1/users", UserRoute);
 app.use("/api/v1/event", EventRoute);
 
+// Health Check Endpoint
+app.get("/health", (_, res) => {
+  res.status(200).send("Server is Running");
+});
+
 export { app };
