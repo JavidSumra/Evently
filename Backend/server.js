@@ -10,7 +10,9 @@ connectDB()
       console.log(`Server Running on PORT:${PORT}`);
       // simulate a ready application after 4 second
       setTimeout(function () {
-        process.send("ready");
+        if (typeof process.send === "function") {
+          process.send("what I want to send");
+        }
       }, 4000);
     });
   })

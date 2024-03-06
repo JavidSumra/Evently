@@ -3,9 +3,11 @@ module.exports = {
     {
       name: "Evently",
       script: "server.js",
+      exec_mode: "cluster",
       instances: 5,
       wait_ready: true,
-      exec_mode: "cluster",
+      out_file: "logs/out.log",
+      error_log: "logs/err.log",
     },
   ],
 };
