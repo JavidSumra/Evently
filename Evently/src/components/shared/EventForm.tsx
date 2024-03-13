@@ -15,6 +15,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { API_ENDPOINT } from "@/constant/constant";
 import { toast } from "react-toastify";
+import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 interface EventDetails {
   title: String;
@@ -31,6 +33,10 @@ interface EventDetails {
 
 const EventForm = () => {
   const navigate = useNavigate();
+  const {
+    i18n: { language },
+  } = useTranslation();
+
   const { register, handleSubmit, watch, setValue } = useForm<EventDetails>();
   const isFree = watch("isFree");
 
@@ -70,8 +76,7 @@ const EventForm = () => {
         });
         navigate("/events/create");
       }
-
-      setValue("Image", coverImage);
+      data.Image = coverImage;
 
       data.startDateTime = startDateTime ? startDateTime : new Date();
       data.endDateTime = endDateTime ? endDateTime : new Date();
@@ -121,6 +126,19 @@ const EventForm = () => {
     isFree && setValue("price", "0");
   }, [isFree]);
 
+  // // Date and Time Formatter
+  // const dateTimeFormatter = new Intl.DateTimeFormat(
+  //   `${language}-${language.toUpperCase()}`,
+  //   {
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //     hour: "numeric",
+  //     minute: "numeric",
+  //     second: "numeric",
+  //   }
+  // );
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex items-center justify-between w-full">
@@ -128,17 +146,17 @@ const EventForm = () => {
           <input
             type="text"
             className="input-field w-full"
-            placeholder="Event Title"
+            placeholder={t("event.titlePlace")}
             {...register("title", { required: true })}
           />
         </div>
         <div className="w-1/2">
           <select className="select-field w-full" {...register("category")}>
-            <option value="Javid" className="select-item">
-              Javid
+            <option value="Web Development" className="select-item">
+              Web Development
             </option>
             <option value="" className="select-item p-2 hover:bg-blue-400">
-              Add New Category
+              {t("event.btnNewCat")}
             </option>
           </select>
         </div>
@@ -147,6 +165,7 @@ const EventForm = () => {
       <div className="flex">
         <textarea
           id=""
+          placeholder={t("event.descPlace")}
           {...register("description", { required: true })}
           cols={30}
           rows={10}
@@ -187,7 +206,7 @@ const EventForm = () => {
                   htmlFor="fileUpload"
                   className="cursor-pointer p-3 rounded-lg text-white react-datepicker__time-list-item--selected"
                 >
-                  Select from Computer
+                  {t("event.photoButton")}
                 </label>
               </div>
             </div>
@@ -200,7 +219,7 @@ const EventForm = () => {
           <img src={LocationImg} alt="Location" width={24} height={24} />
           <input
             {...register("location", { required: true })}
-            placeholder="Event location or Online"
+            placeholder={t("event.locPlace")}
             className="w-full outline-none bg-grey-50 rounded"
           />
         </div>
@@ -215,18 +234,19 @@ const EventForm = () => {
             height={24}
             className="filter-grey"
           />
-          <p className="ml-3 whitespace-nowrap text-grey-600">Start Date:</p>
+          <p className="ml-3 whitespace-nowrap text-grey-600">
+            {t("event.stDate")}:
+          </p>
           <DatePicker
-            value={
-              startDateTime
-                ? new Date(startDateTime).toLocaleString("en-In")
-                : undefined
-            }
+            selected={startDateTime}
             onChange={(date) => setStartDateTime(date)}
+            minDate={startDateTime}
             showTimeSelect
-            timeInputLabel="Time:"
-            dateFormat="MM/dd/yyyy h:mm aa"
+            timeFormat="HH:mm"
+            timeCaption="time"
+            dateFormat="MMMM d, yyyy h:mm aa"
             wrapperClassName="datePicker"
+            locale={language}
           />
         </div>
 
@@ -238,18 +258,18 @@ const EventForm = () => {
             height={24}
             className="filter-grey"
           />
-          <p className="ml-3 whitespace-nowrap text-grey-600">End Date:</p>
+          <p className="ml-3 whitespace-nowrap text-grey-600">
+            {t("event.enDate")}:
+          </p>
           <DatePicker
-            value={
-              endDateTime
-                ? new Date(endDateTime).toLocaleString("en-In")
-                : undefined
-            }
+            selected={endDateTime}
             onChange={(date) => setEndDateTime(date)}
             showTimeSelect
+            minDate={startDateTime}
             timeInputLabel="Time:"
             dateFormat="MM/dd/yyyy h:mm aa"
             wrapperClassName="datePicker"
+            locale={language}
           />
         </div>
       </div>
@@ -265,7 +285,7 @@ const EventForm = () => {
           />
           <input
             type="number"
-            placeholder="Price"
+            placeholder={t("event.price")}
             {...register("price")}
             className="w-full outline-none p-regular-16 border-0 bg-grey-50 outline-offset-0 focus:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           />
@@ -275,11 +295,11 @@ const EventForm = () => {
               htmlFor="isFree"
               className="whitespace-nowrap pr-3 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              Free Ticket
+              {t("event.freeTicket")}
             </label>
             <input
               type="checkbox"
-              {...register("isFree", { required: true })}
+              {...register("isFree")}
               id="isFree"
               className="mr-2 h-5 w-5 border-2 border-primary-500"
             />
@@ -290,7 +310,7 @@ const EventForm = () => {
           <img src={UrlImg} alt="link" width={24} height={24} />
 
           <input
-            placeholder="URL"
+            placeholder={t("event.urlPlace")}
             {...register("URL", { required: true })}
             className="w-full bg-grey-50 outline-none px-2"
           />
@@ -299,7 +319,7 @@ const EventForm = () => {
 
       <div>
         <button className="bg-[#624cf5] font-bold text-white p-4 w-full rounded-full">
-          Submit
+          {t("event.submitBtn")}
         </button>
       </div>
     </form>

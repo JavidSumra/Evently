@@ -95,8 +95,8 @@ const getAllEvents = AsyncHandler(async (req, res) => {
 
     if (allEventDetails?.length === 0 || !allEventDetails) {
       return res
-        .status(502)
-        .json(new APIError("No Events Available for Now", 502));
+        .status(200)
+        .json(new APIError("No Events Available for Now", 200));
     }
 
     res

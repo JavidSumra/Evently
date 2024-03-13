@@ -8,23 +8,21 @@ import HomeImage from "../../assets/images/hero.png";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_ENDPOINT } from "@/constant/constant";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
+  const { t } = useTranslation();
   const [events, setEvents] = useState([]);
 
   const eventsData = async () => {
-    try {
-      const res = (
-        await axios.get(`${API_ENDPOINT}/event/details`, {
-          withCredentials: true,
-        })
-      )?.data;
+    const res = (
+      await axios.get(`${API_ENDPOINT}/event/details`, {
+        withCredentials: true,
+      })
+    )?.data;
 
-      if (res?.success) {
-        setEvents(res?.data);
-      }
-    } catch (error) {
-      console.log(error);
+    if (res?.success) {
+      setEvents(res?.data);
     }
   };
 
@@ -37,15 +35,10 @@ export default function Home() {
       <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
         <div className="wrapper grid grid-cols-1 gap-5 md:grid-cols-2 2xl:gap-0">
           <div className="flex flex-col justify-center gap-8">
-            <h1 className="h1-bold">
-              Host, Connect, Celebrate: Your Events, Our Platform!
-            </h1>
-            <p className="p-regular-20 md:p-regular-24">
-              Book and learn helpful tips from 3,168+ mentors in world-class
-              companies with our global community.
-            </p>
+            <h1 className="h1-bold">{t("headerTitle")}</h1>
+            <p className="p-regular-20 md:p-regular-24">{t("slogan")}</p>
             <Button size="lg" asChild className="button w-full sm:w-fit">
-              <a href="#events">Explore Now</a>
+              <a href="#events">{t("exploreButton")}</a>
             </Button>
           </div>
 
@@ -64,7 +57,7 @@ export default function Home() {
         className="wrapper my-8 flex flex-col gap-8 md:gap-12"
       >
         <h2 className="h2-bold">
-          Trust by <br /> Thousands of Events
+          {t("home.eventHeader-2")} <br /> {t("home.eventHeader-1")}
         </h2>
 
         <div className="flex w-full flex-col gap-5 md:flex-row" id="events">
@@ -74,8 +67,8 @@ export default function Home() {
 
         <Collection
           data={events}
-          emptyTitle="No Events Found"
-          emptyStateSubtext="Come back later"
+          emptyTitle={t("home.noEvent")}
+          emptyStateSubtext={t("home.comeBack")}
           collectionType="All_Events"
           limit={6}
           page={2}
