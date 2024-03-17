@@ -45,20 +45,25 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
-    localStorage.removeItem("userData");
-    const res = (
-      await axios.get(`${API_ENDPOINT}/users/logout`, {
-        withCredentials: true,
-      })
-    )?.data;
+    try {
+      localStorage.removeItem("userData");
+      const res = (
+        await axios.get(`${API_ENDPOINT}/users/logout`, {
+          withCredentials: true,
+        })
+      )?.data;
 
-    if (res.statusCode === 200) {
-      navigate("/");
-    }
+      if (res.statusCode === 200) {
+        navigate("/");
+      }
 
-    if (!res?.success) {
+      if (!res?.success) {
+        localStorage.removeItem("authToken");
+        navigate("/");
+      }
+    } catch (error) {
+      console.log(error);
       localStorage.removeItem("authToken");
-      navigate("/");
     }
   };
 

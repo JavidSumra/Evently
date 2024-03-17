@@ -12,42 +12,37 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import axios from "axios";
-import { API_ENDPOINT } from "@/constant/constant";
 import { toast } from "react-toastify";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
-
-interface EventDetails {
-  title: String;
-  category: String;
-  description: String;
-  Image: File | null;
-  URL: String;
-  startDateTime: Date;
-  endDateTime: Date;
-  price: String;
-  isFree: Boolean;
-  location: String;
-}
+import { addEvent } from "@/context/events/actions";
+import { useEventsDispatch } from "@/context/events/context";
+import { Events } from "@/context/events/types";
 
 const EventForm = () => {
   const navigate = useNavigate();
+  const eventDispatch = useEventsDispatch();
+
   const {
     i18n: { language },
   } = useTranslation();
 
-  const { register, handleSubmit, watch, setValue } = useForm<EventDetails>();
+  const { register, handleSubmit, watch, setValue } = useForm<Events>();
   const isFree = watch("isFree");
 
   // State variables for start and end dates
   const [startDateTime, setStartDateTime] = useState<Date | null>(new Date());
   const [endDateTime, setEndDateTime] = useState<Date | null>(new Date());
 
+  // check Status of Form Submission
+  const [isSubmit, setIsSubmit] = useState(false);
+
   // State variable for Image
   const [coverImage, setCoverImage] = useState<File | null>(null);
 
-  const onSubmit: SubmitHandler<EventDetails> = async (data) => {
+  const onSubmit: SubmitHandler<Events> = async (data) => {
+    setIsSubmit(true);
+    data.Image = coverImage;
     try {
       if (!coverImage || !endDateTime || !startDateTime) {
         toast.error("Required Information Missing", {
@@ -76,23 +71,15 @@ const EventForm = () => {
         });
         navigate("/events/create");
       }
-      data.Image = coverImage;
 
       data.startDateTime = startDateTime ? startDateTime : new Date();
       data.endDateTime = endDateTime ? endDateTime : new Date();
 
-      const res = (
-        await axios.post(`${API_ENDPOINT}/event/create`, data, {
-          headers: {
-            "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
-          },
-          withCredentials: true,
-        })
-      )?.data;
+      const res = await addEvent(eventDispatch, data);
 
-      console.log(res);
+      setIsSubmit(false);
 
-      if (res.success) {
+      if (res?.success) {
         toast.success("Event Created Successfully", {
           position: "top-right",
           autoClose: 5000,
@@ -125,19 +112,6 @@ const EventForm = () => {
   useEffect(() => {
     isFree && setValue("price", "0");
   }, [isFree]);
-
-  // // Date and Time Formatter
-  // const dateTimeFormatter = new Intl.DateTimeFormat(
-  //   `${language}-${language.toUpperCase()}`,
-  //   {
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric",
-  //     hour: "numeric",
-  //     minute: "numeric",
-  //     second: "numeric",
-  //   }
-  // );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -186,6 +160,7 @@ const EventForm = () => {
             <div className="w-full h-full m-2 bg-grey-50 rounded-lg flex items-center justify-evenly flex-col">
               <input
                 type="file"
+                {...register("Image", { required: true })}
                 id="fileUpload"
                 className="hidden"
                 onChange={(event) =>
@@ -318,9 +293,40 @@ const EventForm = () => {
       </div>
 
       <div>
-        <button className="bg-[#624cf5] font-bold text-white p-4 w-full rounded-full">
-          {t("event.submitBtn")}
-        </button>
+        {isSubmit ? (
+          <button
+            className="bg-[#624cf5] font-bold text-white p-4 w-full rounded-full cursor-not-allowed"
+            disabled
+          >
+            <div className="flex justify-center items-center w-full">
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Submitting...
+            </div>
+          </button>
+        ) : (
+          <button className="bg-[#624cf5] font-bold text-white p-4 w-full rounded-full">
+            {t("event.submitBtn")}
+          </button>
+        )}
       </div>
     </form>
   );

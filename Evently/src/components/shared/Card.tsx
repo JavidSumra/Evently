@@ -16,6 +16,9 @@ const Card = ({ event, hasOrderLink, hidePrice }: any) => {
     i18n: { language },
   } = useTranslation();
 
+  const isLogin = JSON.parse(localStorage.getItem("userData") || "");
+  const isEventCreator = event?.organizer == isLogin?._id;
+
   const currency =
     language === "en" ? "USD" : language === "hn" ? "INR" : "EUR";
 
@@ -28,17 +31,17 @@ const Card = ({ event, hasOrderLink, hidePrice }: any) => {
       />
       {/* IS EVENT CREATOR ... */}
 
-      {/* {isEventCreator && !hidePrice && ( */}
-      <div className="hidden group-hover:flex">
-        <div className="absolute right-2 top-2 flex flex-col gap-4 rounded-xl bg-white p-3 shadow-sm transition-all">
-          <Link to={`/events/update`}>
-            <img src={EditImg} alt="edit" width={20} height={20} />
-          </Link>
+      {isLogin?._id && isEventCreator && (
+        <div className="hidden group-hover:flex">
+          <div className="absolute right-2 top-2 flex flex-col gap-4 rounded-xl bg-white p-3 shadow-sm transition-all">
+            <Link to={`/events/update`}>
+              <img src={EditImg} alt="edit" width={20} height={20} />
+            </Link>
 
-          <DeleteConfirmation eventId={event?._id} />
+            <DeleteConfirmation eventId={event?._id} />
+          </div>
         </div>
-      </div>
-      {/* )} */}
+      )}
 
       <div className="flex min-h-[230px] flex-col gap-3 p-5 md:gap-4">
         {!hidePrice && (

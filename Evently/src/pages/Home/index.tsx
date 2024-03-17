@@ -5,29 +5,22 @@ import { Button } from "@/components/ui/button";
 // import { SearchParamProps } from "@/types";
 // import { Link } from "react-router-dom";
 import HomeImage from "../../assets/images/hero.png";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_ENDPOINT } from "@/constant/constant";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { fetchEvents } from "@/context/events/actions";
+import { useEventsDispatch, useEventsState } from "@/context/events/context";
 
 export default function Home() {
   const { t } = useTranslation();
-  const [events, setEvents] = useState([]);
+  const eventsDispatch = useEventsDispatch();
+  const state = useEventsState();
 
-  const eventsData = async () => {
-    const res = (
-      await axios.get(`${API_ENDPOINT}/event/details`, {
-        withCredentials: true,
-      })
-    )?.data;
-
-    if (res?.success) {
-      setEvents(res?.data);
-    }
-  };
+  const { Events } = state;
 
   useEffect(() => {
-    eventsData();
+    (async () => {
+      await fetchEvents(eventsDispatch);
+    })();
   }, []);
 
   return (
@@ -66,7 +59,7 @@ export default function Home() {
         </div>
 
         <Collection
-          data={events}
+          data={Events ?? []}
           emptyTitle={t("home.noEvent")}
           emptyStateSubtext={t("home.comeBack")}
           collectionType="All_Events"
