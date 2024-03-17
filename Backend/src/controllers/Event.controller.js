@@ -30,6 +30,7 @@ const createEvent = AsyncHandler(async (req, res) => {
     }
 
     console.log(req.files.Image);
+
     const coverImagePath = await req.files?.Image[0]?.path;
 
     const coverImage = await uploadOnCloudinary(coverImagePath);
@@ -91,7 +92,36 @@ const deleteEvent = AsyncHandler(async (req, res) => {
 
 const getAllEvents = AsyncHandler(async (req, res) => {
   try {
-    const allEventDetails = await Event.find({});
+    const allEventDetails = await Event.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "organizer",
+          foreignField: "_id",
+          as: "eventDetails",
+        },
+      },
+      {
+        $unwind: "$eventDetails",
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          organizer: 1,
+          location: 1,
+          coverImage: 1,
+          price: 1,
+          isFree: 1,
+          category: 1,
+          startDateTime: 1,
+          endDateTime: 1,
+          firstName: "$eventDetails.firstName",
+          lastName: "$eventDetails.lastName",
+        },
+      },
+    ]);
 
     if (allEventDetails?.length === 0 || !allEventDetails) {
       return res
