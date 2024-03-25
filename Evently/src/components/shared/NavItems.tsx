@@ -1,5 +1,3 @@
-"use client";
-
 import { t } from "i18next";
 import { Link } from "react-router-dom";
 // import { usePathname } from "next/navigation";
