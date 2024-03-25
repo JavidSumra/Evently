@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true, limit: "18kb" }));
 // CORS Configuration
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://eventlywd401.netlify.app"],
+    origin: ["http://localhost:*", "https://eventlywd401.netlify.app"],
     credentials: true,
   })
 );

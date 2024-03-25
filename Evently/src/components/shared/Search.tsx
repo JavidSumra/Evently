@@ -3,12 +3,11 @@ import { Input } from "../ui/input";
 // import { formUrlQuery, removeKeysFromQuery } from "@/lib/utils";
 // import { useRouter, useSearchParams } from "next/navigation";
 import searchIcon from "../../assets/icons/search.svg";
+import { useTranslation } from "react-i18next";
 
-const Search = ({
-  placeholder = "Search title...",
-}: {
-  placeholder?: string;
-}) => {
+const Search = () => {
+  const { t } = useTranslation();
+
   const [query, setQuery] = useState("");
   //   const router = useRouter();
   //   const searchParams = useSearchParams();
@@ -41,7 +40,7 @@ const Search = ({
       <img src={searchIcon} alt="search" width={24} height={24} />
       <Input
         type="text"
-        placeholder={placeholder}
+        placeholder={`${t("home.searchPlaceHolder")}...`}
         onChange={(e) => setQuery(e.target.value)}
         className="p-regular-16 border-0 bg-grey-50 outline-offset-0 placeholder:text-grey-500 focus:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
       />
