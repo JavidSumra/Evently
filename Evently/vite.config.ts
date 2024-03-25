@@ -1,14 +1,23 @@
 import path from "path";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 export default ({ mode }: any) => {
+  const env = loadEnv(mode, process.cwd());
+
   return defineConfig({
     build: {
       outDir: "build",
+      sourcemap: true,
     },
     plugins: [
+      sentryVitePlugin({
+        org: "javid-5o",
+        project: "javascript-react",
+        authToken: env.VITE_SENTRY_AUTH_TOKEN,
+      }),
       react(),
       VitePWA({
         devOptions: {

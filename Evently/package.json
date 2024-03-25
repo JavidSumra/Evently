@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.0.7",
+    "@sentry/react": "^7.107.0",
     "@types/axios": "^0.14.0",
     "axios": "^1.6.7",
     "class-variance-authority": "^0.7.0",
@@ -32,6 +33,7 @@
     "vite-plugin-pwa": "^0.18.1"
   },
   "devDependencies": {
+    "@sentry/vite-plugin": "^2.15.0",
     "@types/node": "^20.11.17",
     "@types/react": "^18.2.55",
     "@types/react-datepicker": "^4.19.6",

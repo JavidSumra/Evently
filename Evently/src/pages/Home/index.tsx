@@ -20,6 +20,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       await fetchEvents(eventsDispatch);
+      // throw new Error("Failed to Fetch Events"); Sentry Test Error.
     })();
   }, []);
 
