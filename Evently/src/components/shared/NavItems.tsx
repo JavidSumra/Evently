@@ -1,20 +1,21 @@
 "use client";
 
+import { t } from "i18next";
 import { Link } from "react-router-dom";
 // import { usePathname } from "next/navigation";
 
 const NavItems = () => {
   const headerLinks = [
     {
-      label: "Home",
+      label: t("nav.Home"),
       route: "/",
     },
     {
-      label: "Create Event",
+      label: t("nav.CreateEvent"),
       route: "/events/create",
     },
     {
-      label: "My Profile",
+      label: t("nav.Myprofile"),
       route: "/profile",
     },
   ];

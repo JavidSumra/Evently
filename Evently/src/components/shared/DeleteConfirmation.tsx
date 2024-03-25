@@ -13,26 +13,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import DeletImg from "../../assets/icons/delete.svg";
-import axios from "axios";
-import { API_ENDPOINT } from "@/constant/constant";
 import { useNavigate } from "react-router-dom";
-
-// import { deleteEvent } from "@/lib/actions/event.actions";
+import { useEventsDispatch } from "@/context/events/context";
+import { deleteEvent } from "@/context/events/actions";
 
 export const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
   const navigate = useNavigate();
+  const dispatch = useEventsDispatch();
   let [isPending] = useTransition();
 
-  const deleteEvent = async ({
+  const deleteEventDetail = async ({
     eventId,
   }: {
-    eventId: String;
+    eventId: string;
   }): Promise<void> => {
-    const res = (
-      await axios.delete(`${API_ENDPOINT}/event/delete/${eventId}`, {
-        withCredentials: true,
-      })
-    )?.data;
+    const res = await deleteEvent(dispatch, eventId);
 
     if (res.success) {
       navigate("/");
@@ -56,7 +51,7 @@ export const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
 
-          <AlertDialogAction onClick={() => deleteEvent({ eventId })}>
+          <AlertDialogAction onClick={() => deleteEventDetail({ eventId })}>
             {isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>

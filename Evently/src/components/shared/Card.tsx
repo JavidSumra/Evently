@@ -3,6 +3,7 @@ import { DeleteConfirmation } from "./DeleteConfirmation";
 import { Link } from "react-router-dom";
 import EditImg from "../../assets/icons/edit.svg";
 import ArraowImg from "../../assets/icons/arrow.svg";
+import { useTranslation } from "react-i18next";
 
 // type CardProps = {
 //   event: IEvent;
@@ -11,21 +12,15 @@ import ArraowImg from "../../assets/icons/arrow.svg";
 // };
 
 const Card = ({ event, hasOrderLink, hidePrice }: any) => {
-  console.log(event, hasOrderLink, hidePrice);
+  const {
+    i18n: { language },
+  } = useTranslation();
 
-  const dateTimeOptions: Intl.DateTimeFormatOptions = {
-    weekday: "short", // abbreviated weekday name (e.g., 'Mon')
-    month: "short", // abbreviated month name (e.g., 'Oct')
-    day: "numeric", // numeric day of the month (e.g., '25')
-    hour: "numeric", // numeric hour (e.g., '8')
-    minute: "numeric", // numeric minute (e.g., '30')
-    hour12: true, // use 12-hour clock (true) or 24-hour clock (false)
-  };
+  const isLogin = JSON.parse(localStorage.getItem("userData") || "");
+  const isEventCreator = event?.organizer == isLogin?._id;
 
-  //   const { sessionClaims } = auth();
-  //   const userId = sessionClaims?.userId as string;
-
-  //   const isEventCreator = userId === event.organizer._id.toString();
+  const currency =
+    language === "en" ? "USD" : language === "hn" ? "INR" : "EUR";
 
   return (
     <div className="group relative flex min-h-[300px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]">
@@ -36,35 +31,34 @@ const Card = ({ event, hasOrderLink, hidePrice }: any) => {
       />
       {/* IS EVENT CREATOR ... */}
 
-      {/* {isEventCreator && !hidePrice && ( */}
-      <div className="hidden group-hover:flex">
-        <div className="absolute right-2 top-2 flex flex-col gap-4 rounded-xl bg-white p-3 shadow-sm transition-all">
-          <Link to={`/events/update`}>
-            <img src={EditImg} alt="edit" width={20} height={20} />
-          </Link>
+      {isLogin?._id && isEventCreator && (
+        <div className="hidden group-hover:flex">
+          <div className="absolute right-2 top-2 flex flex-col gap-4 rounded-xl bg-white p-3 shadow-sm transition-all">
+            <Link to={`/events/update`}>
+              <img src={EditImg} alt="edit" width={20} height={20} />
+            </Link>
 
-          <DeleteConfirmation eventId={event?._id} />
+            <DeleteConfirmation eventId={event?._id} />
+          </div>
         </div>
-      </div>
-      {/* )} */}
+      )}
 
       <div className="flex min-h-[230px] flex-col gap-3 p-5 md:gap-4">
         {!hidePrice && (
           <div className="flex gap-2">
             <span className="p-semibold-14 w-min rounded-full bg-green-100 px-4 py-1 text-green-60">
-              {event.isFree ? "FREE" : `$${event.price}`}
+              {event.isFree
+                ? "FREE"
+                : `${formatCurrency(event?.price, language, currency)}`}
             </span>
-            <p className="p-semibold-14 w-min rounded-full bg-grey-500/10 px-4 py-1 text-grey-500 line-clamp-1">
+            <p className="p-semibold-14 w-max rounded-full bg-grey-500/10 px-4 py-1 text-grey-500">
               {event.category}
             </p>
           </div>
         )}
 
         <p className="p-medium-16 p-medium-18 text-grey-500">
-          {new Date(event.startDateTime).toLocaleString(
-            "en-US",
-            dateTimeOptions
-          )}
+          {formatDateAndTime(new Date(event?.startDateTime), language)}
         </p>
 
         <Link to={`/events/`}>
@@ -75,7 +69,7 @@ const Card = ({ event, hasOrderLink, hidePrice }: any) => {
 
         <div className="flex-between w-full">
           <p className="p-medium-14 md:p-medium-16 text-grey-600">
-            {event.organizer.firstName} {event.organizer.lastName}
+            {event?.firstName} {event?.lastName}
           </p>
 
           {hasOrderLink && (
@@ -89,5 +83,33 @@ const Card = ({ event, hasOrderLink, hidePrice }: any) => {
     </div>
   );
 };
-
 export default Card;
+
+// Function to Format Date and Time
+function formatDateAndTime(date: Date, language: string): string {
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  };
+
+  return new Intl.DateTimeFormat(
+    `${language}-${language.toUpperCase()}`,
+    options
+  ).format(date);
+}
+
+// Function to format Currency
+function formatCurrency(
+  amount: number,
+  locale: string,
+  currency: string
+): string {
+  return new Intl.NumberFormat(`${locale}-${locale.toUpperCase()}`, {
+    style: "currency",
+    currency: currency,
+  }).format(amount);
+}

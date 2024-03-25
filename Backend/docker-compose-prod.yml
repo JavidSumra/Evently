@@ -5,17 +5,22 @@ services:
       context: .
       target: production
     image: evently:production
+    volumes:
+      - .:/app
     ports:
       - 3008:3008
     env_file:
       - .env
     depends_on:
       - db
-  db:
-    image: mongo:7.0.2
-    volumes:
-      - mongo-prod-data:/data/db
     environment:
-      MONGO_DB_URL: $MONGO_DB_URL
+      MONGO_DB_URL: mongodb://db:27017/Evently
+    db:
+      image: mongo:7.0.2
+      container_name: mongodb
+      ports:
+        - '27017:27017'
+      volumes:
+        - mongo-dev-data:/data/db
 volumes:
   mongo-prod-data:

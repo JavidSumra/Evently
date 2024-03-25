@@ -22,4 +22,8 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
 });
 
-ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <Sentry.ErrorBoundary fallback={<div>Error: Frontend Rendering Error</div>}>
+    <App />
+  </Sentry.ErrorBoundary>
+);

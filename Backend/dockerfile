@@ -1,7 +1,6 @@
-FROM --platform=$BUILDPLATFORM node:lts-alpine as base
+FROM --platform=$BUILDPLATFORM node:20.11.0-alpine as base
 WORKDIR /app
 COPY package.json /
-RUN npm install
 EXPOSE 3008
 
 FROM base as production
@@ -12,5 +11,6 @@ CMD npm run dev
 
 FROM base as dev
 ENV NODE_ENV=development
+RUN npm install
 COPY . /app
 CMD node server.js

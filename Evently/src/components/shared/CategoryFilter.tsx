@@ -12,8 +12,10 @@ import {
 // import { formUrlQuery, removeKeysFromQuery } from "@/lib/utils";
 // import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const CategoryFilter = () => {
+  const { t } = useTranslation();
   const [categories] = useState([{ name: "Test", _id: 1 }]);
   //   const router = useRouter();
   //   const searchParams = useSearchParams();
@@ -48,7 +50,7 @@ const CategoryFilter = () => {
   return (
     <Select onValueChange={(value: string) => onSelectCategory(value)}>
       <SelectTrigger className="select-field">
-        <SelectValue placeholder="Category" />
+        <SelectValue placeholder={t("category")} />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="All" className="select-item p-regular-14">
