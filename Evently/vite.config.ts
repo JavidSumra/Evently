@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
-import Dotenv from "dotenv-webpack";
 
 export default ({ mode }: any) => {
   const env = loadEnv(mode, process.cwd());
@@ -14,9 +13,6 @@ export default ({ mode }: any) => {
       sourcemap: true,
     },
     plugins: [
-      new Dotenv({
-        systemvars: true,
-      }),
       sentryVitePlugin({
         org: "javid-5o",
         project: "javascript-react",

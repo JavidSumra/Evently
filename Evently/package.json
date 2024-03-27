@@ -16,7 +16,6 @@
     "axios": "^1.6.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "dotenv-webpack": "^8.1.0",
     "i18next": "^23.10.0",
     "i18next-browser-languagedetector": "^7.2.0",
     "lucide-react": "^0.323.0",
@@ -36,7 +35,6 @@
   "devDependencies": {
     "@sentry/react": "^7.108.0",
     "@sentry/vite-plugin": "^2.16.0",
-    "@types/dotenv-webpack": "^7.0.7",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.69",
     "@types/react-datepicker": "^4.19.6",
