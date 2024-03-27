@@ -1,4 +1,4 @@
-import { API_ENDPOINT } from "../../constant/constant";
+import { API_ENDPOINT } from "../../config/constants";
 import { Events, EventsAvailableActions, EventsDispatch } from "./types";
 
 import axios from "axios";

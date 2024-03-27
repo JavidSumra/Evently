@@ -2,7 +2,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import * as Sentry from "@sentry/react";
-import { API_ENDPOINT, SENTRY_DNS } from "./constant/constant.ts";
+import { API_ENDPOINT, SENTRY_DNS } from "./config/constants.ts";
 import "./i18n.ts";
 
 Sentry.init({

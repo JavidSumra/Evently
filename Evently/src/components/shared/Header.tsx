@@ -4,7 +4,7 @@ import NavItems from "./NavItems";
 import MobileNav from "./MobileNav";
 import Logo from "../../assets/images/logo.svg";
 import axios from "axios";
-import { API_ENDPOINT } from "@/constant/constant";
+import { API_ENDPOINT } from "@/config/constants";
 import { toast } from "react-toastify";
 
 import {
