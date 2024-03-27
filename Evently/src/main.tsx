@@ -3,6 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 import * as Sentry from "@sentry/react";
 import { API_ENDPOINT, SENTRY_DNS } from "./constant/constant.ts";
+import "./i18n.ts";
 
 Sentry.init({
   dsn: SENTRY_DNS,
