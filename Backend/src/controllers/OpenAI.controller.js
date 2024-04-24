@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import fs from "fs";
+import path from "path";
 import { uploadOnCloudinary } from "../utils/Cloudinary.util.js";
 import { APIResponse } from "../utils/APIResponse.util.js";
 
@@ -102,7 +103,12 @@ const generateEventContent = async (req, res, next) => {
           imageType = response.type.split("/")[1];
 
           // Specify the file path where you want to write the file
-          filePath = `${import.meta.dirname.split("src")[0] + "public\\temp"}\\AI_Generated_Image.${imageType}`;
+          filePath = path.join(
+            __dirname.split("src")[0],
+            "public",
+            "temp",
+            `AI_Generated_Image.${imageType}`
+          );
           // Write the buffer to the file
           fs.writeFileSync(filePath, buffer);
           console.log("File written successfully to:", filePath);
@@ -110,7 +116,12 @@ const generateEventContent = async (req, res, next) => {
         .catch((error) => {
           console.log(error);
         }));
-    filePath = `${import.meta.dirname.split("src")[0] + "public\\temp"}\\AI_Generated_Image.${imageType}`;
+    filePath = path.join(
+      __dirname.split("src")[0],
+      "public",
+      "temp",
+      `AI_Generated_Image.${imageType}`
+    );
     if (filePath) {
       Cloudinaryresponse = await uploadOnCloudinary(filePath);
     }
