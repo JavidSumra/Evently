@@ -7,7 +7,7 @@ on:
       - dev
   pull_request: # Trigger the workflow on pull requests targeting the specified branches
     branches:
-      - dev
+      - main
 
 jobs:
   run-unit-tests:

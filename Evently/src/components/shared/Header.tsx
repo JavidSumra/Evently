@@ -69,30 +69,32 @@ const Header = () => {
 
   const handleLogin = async () => {
     const refreshToken = document.cookie.split("refreshToken=")[1];
-    if (refreshToken) {
-      const res = (
-        await axios.get(`${API_ENDPOINT}/users/refresh/token`, {
-          withCredentials: true,
-        })
-      )?.data;
+    try {
+      if (refreshToken) {
+        const res = (
+          await axios.get(`${API_ENDPOINT}/users/refresh/token`, {
+            withCredentials: true,
+          })
+        )?.data;
 
-      console.log(res);
-
-      if (res.data && res.success) {
-        localStorage.setItem("userData", JSON.stringify(res.data));
-        toast.success(`Welcome to Evently ${res.data.userName}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        navigate("/");
+        if (res.data && res.success) {
+          localStorage.setItem("userData", JSON.stringify(res.data));
+          toast.success(`Welcome to Evently ${res.data.userName}`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          navigate("/");
+        }
+      } else {
+        navigate("/signin");
       }
-    } else {
+    } catch {
       navigate("/signin");
     }
   };

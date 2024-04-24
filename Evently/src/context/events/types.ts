@@ -4,7 +4,7 @@ export interface Events {
   title: string;
   category: string;
   description: string;
-  Image: File | null;
+  Image: File | string | null;
   URL: string;
   startDateTime: Date;
   endDateTime: Date;

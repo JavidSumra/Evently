@@ -4,12 +4,15 @@ import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 import { EventsProvider } from "./context/events/context";
+import { AIEventProvider } from "./context/AI_CONTENT/context";
 
 function App() {
   return (
     <div>
       <EventsProvider>
-        <RouterProvider router={router} />
+        <AIEventProvider>
+          <RouterProvider router={router} />
+        </AIEventProvider>
       </EventsProvider>
       <ToastContainer />
     </div>

@@ -9,6 +9,7 @@ import {
 } from "../controllers/Event.controller.js";
 
 import { upload } from "../middlewares/multer.middleware.js";
+import generateEventContent from "../controllers/OpenAI.controller.js";
 
 const router = Router();
 
@@ -22,6 +23,9 @@ router
 
 router.route("/details").get(getAllEvents);
 router.route("/details/:id").get(getEventDetailById);
+
+// Route for AI Content and Image Generation
+router.route("/NLP/input").post(isAuthenticate, generateEventContent);
 
 router.route("/update/:id").put(isAuthenticate, updateEvent);
 

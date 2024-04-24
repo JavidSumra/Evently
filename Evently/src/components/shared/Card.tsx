@@ -15,8 +15,9 @@ const Card = ({ event, hasOrderLink, hidePrice }: any) => {
   const {
     i18n: { language },
   } = useTranslation();
+  const userData = localStorage.getItem("userData");
 
-  const isLogin = JSON.parse(localStorage.getItem("userData") || "");
+  const isLogin = userData && JSON.parse(userData);
   const isEventCreator = event?.organizer == isLogin?._id;
 
   const currency =
@@ -38,7 +39,7 @@ const Card = ({ event, hasOrderLink, hidePrice }: any) => {
               <img src={EditImg} alt="edit" width={20} height={20} />
             </Link>
 
-            <DeleteConfirmation eventId={event?._id} />
+            <DeleteConfirmation  eventId={event?._id} />
           </div>
         </div>
       )}
@@ -87,6 +88,7 @@ export default Card;
 
 // Function to Format Date and Time
 function formatDateAndTime(date: Date, language: string): string {
+  console.log(language);
   const options: Intl.DateTimeFormatOptions = {
     weekday: "short",
     month: "short",
@@ -105,7 +107,7 @@ function formatDateAndTime(date: Date, language: string): string {
 // Function to format Currency
 function formatCurrency(
   amount: number,
-  locale: string,
+  locale: string = "en",
   currency: string
 ): string {
   return new Intl.NumberFormat(`${locale}-${locale.toUpperCase()}`, {

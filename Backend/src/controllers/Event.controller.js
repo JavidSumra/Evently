@@ -5,6 +5,9 @@ import { APIError } from "../utils/APIError.util.js";
 import { uploadOnCloudinary } from "../utils/Cloudinary.util.js";
 
 const createEvent = AsyncHandler(async (req, res) => {
+  let coverImagePath = null;
+  let coverImage = null;
+
   try {
     const {
       title,
@@ -29,16 +32,20 @@ const createEvent = AsyncHandler(async (req, res) => {
       return res.status(402).json(new APIError("Required Field Missing", 402));
     }
 
-    console.log(req.files.Image);
+    if (req.files?.Image) {
+      console.log(req.files.Image);
 
-    const coverImagePath = await req.files?.Image[0]?.path;
+      coverImagePath = await req.files?.Image[0]?.path;
 
-    const coverImage = await uploadOnCloudinary(coverImagePath);
+      coverImage = await uploadOnCloudinary(coverImagePath);
 
-    if (!coverImagePath) {
-      return res
-        .status(502)
-        .json(new APIError("Failed to Create Event Cover Image Required", 502));
+      if (!coverImagePath) {
+        return res
+          .status(502)
+          .json(
+            new APIError("Failed to Create Event Cover Image Required", 502)
+          );
+      }
     }
 
     const createEvent = await Event.create({
@@ -51,7 +58,7 @@ const createEvent = AsyncHandler(async (req, res) => {
       category,
       isFree,
       organizer: req?.user?.id,
-      coverImage: coverImage?.url,
+      coverImage: coverImage?.url || req.body.Image,
     });
 
     if (createEvent) {

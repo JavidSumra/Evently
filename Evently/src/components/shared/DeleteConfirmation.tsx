@@ -37,7 +37,13 @@ export const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger>
-        <img src={DeletImg} alt="edit" width={20} height={20} />
+        <img
+          src={DeletImg}
+          alt="edit"
+          width={20}
+          height={20}
+          id="delete-event"
+        />
       </AlertDialogTrigger>
 
       <AlertDialogContent className="bg-white">
@@ -51,7 +57,10 @@ export const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
 
-          <AlertDialogAction onClick={() => deleteEventDetail({ eventId })}>
+          <AlertDialogAction
+            onClick={() => deleteEventDetail({ eventId })}
+            id="confirm-delete"
+          >
             {isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -18,10 +18,13 @@ import { useTranslation } from "react-i18next";
 import { addEvent } from "@/context/events/actions";
 import { useEventsDispatch } from "@/context/events/context";
 import { Events } from "@/context/events/types";
+import { useAIEventState } from "@/context/AI_CONTENT/context";
+import { initialEventData } from "@/context/AI_CONTENT/types";
 
 const EventForm = () => {
   const navigate = useNavigate();
   const eventDispatch = useEventsDispatch();
+  let { event_Content } = useAIEventState();
 
   const {
     i18n: { language },
@@ -38,7 +41,7 @@ const EventForm = () => {
   const [isSubmit, setIsSubmit] = useState(false);
 
   // State variable for Image
-  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [coverImage, setCoverImage] = useState<File | string | null>(null);
 
   const onSubmit: SubmitHandler<Events> = async (data) => {
     setIsSubmit(true);
@@ -75,6 +78,10 @@ const EventForm = () => {
       data.startDateTime = startDateTime ? startDateTime : new Date();
       data.endDateTime = endDateTime ? endDateTime : new Date();
 
+      if (event_Content?.coverImage) {
+        data.Image = event_Content?.coverImage;
+      }
+
       const res = await addEvent(eventDispatch, data);
 
       setIsSubmit(false);
@@ -90,6 +97,7 @@ const EventForm = () => {
           progress: undefined,
           theme: "colored",
         });
+        event_Content = initialEventData;
         navigate("/");
       } else {
         toast.error("Failed to Create Event", {
@@ -113,22 +121,31 @@ const EventForm = () => {
     isFree && setValue("price", "0");
   }, [isFree]);
 
+  useEffect(() => {
+    console.log(event_Content);
+  }, [event_Content]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex items-center justify-between w-full">
         <div className="w-1/2 mx-2">
           <input
             type="text"
+            id="title"
             className="input-field w-full"
             placeholder={t("event.titlePlace")}
+            value={event_Content.title || watch("title")}
             {...register("title", { required: true })}
           />
         </div>
         <div className="w-1/2">
-          <select className="select-field w-full" {...register("category")}>
-            <option value="Web Development" className="select-item">
-              Web Development
-            </option>
+          <select
+            className="select-field w-full"
+            {...register("category")}
+            id="category"
+            value={event_Content?.category || watch("category")}
+          >
+            <option className="select-item">Technology</option>
             <option value="" className="select-item p-2 hover:bg-blue-400">
               {t("event.btnNewCat")}
             </option>
@@ -138,19 +155,24 @@ const EventForm = () => {
 
       <div className="flex">
         <textarea
-          id=""
+          id="description"
           placeholder={t("event.descPlace")}
+          value={event_Content?.description || watch("description")}
           {...register("description", { required: true })}
           cols={30}
           rows={10}
           className="textarea w-1/2 m-2 rounded-lg"
         ></textarea>
         <div className="w-1/2">
-          {coverImage ? (
+          {coverImage || event_Content?.coverImage ? (
             <img
               src={
-                coverImage
-                  ? URL.createObjectURL(coverImage).toString()
+                coverImage || event_Content?.coverImage
+                  ? !coverImage
+                    ? event_Content?.coverImage
+                    : !(typeof coverImage == "string")
+                    ? URL.createObjectURL(coverImage).toString()
+                    : ""
                   : undefined
               }
               alt="Image Preview"
@@ -194,7 +216,9 @@ const EventForm = () => {
           <img src={LocationImg} alt="Location" width={24} height={24} />
           <input
             {...register("location", { required: true })}
+            value={event_Content?.location || watch("location")}
             placeholder={t("event.locPlace")}
+            id="location"
             className="w-full outline-none bg-grey-50 rounded"
           />
         </div>
@@ -213,15 +237,20 @@ const EventForm = () => {
             {t("event.stDate")}:
           </p>
           <DatePicker
-            selected={startDateTime}
+            selected={
+              event_Content?.startDateTime
+                ? new Date(event_Content?.startDateTime)
+                : endDateTime
+            }
             onChange={(date) => setStartDateTime(date)}
             minDate={startDateTime}
             showTimeSelect
             timeFormat="HH:mm"
             timeCaption="time"
-            dateFormat="MMMM d, yyyy h:mm aa"
+            dateFormat="MM/dd/yyyy h:mm aa"
             wrapperClassName="datePicker"
             locale={language}
+            id="startDateTime"
           />
         </div>
 
@@ -237,7 +266,11 @@ const EventForm = () => {
             {t("event.enDate")}:
           </p>
           <DatePicker
-            selected={endDateTime}
+            selected={
+              event_Content?.endDateTime
+                ? new Date(event_Content?.endDateTime)
+                : endDateTime
+            }
             onChange={(date) => setEndDateTime(date)}
             showTimeSelect
             minDate={startDateTime}
@@ -245,6 +278,7 @@ const EventForm = () => {
             dateFormat="MM/dd/yyyy h:mm aa"
             wrapperClassName="datePicker"
             locale={language}
+            id="endDateTime"
           />
         </div>
       </div>
@@ -260,6 +294,12 @@ const EventForm = () => {
           />
           <input
             type="number"
+            id="price"
+            value={
+              event_Content?.price?.split("$")[1]
+                ? event_Content?.price?.split("$")[1]
+                : watch("price")
+            }
             placeholder={t("event.price")}
             {...register("price")}
             className="w-full outline-none p-regular-16 border-0 bg-grey-50 outline-offset-0 focus:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -286,6 +326,7 @@ const EventForm = () => {
 
           <input
             placeholder={t("event.urlPlace")}
+            id="URL"
             {...register("URL", { required: true })}
             className="w-full bg-grey-50 outline-none px-2"
           />
@@ -296,6 +337,7 @@ const EventForm = () => {
         {isSubmit ? (
           <button
             className="bg-[#624cf5] font-bold text-white p-4 w-full rounded-full cursor-not-allowed"
+            type="submit"
             disabled
           >
             <div className="flex justify-center items-center w-full">
@@ -311,7 +353,7 @@ const EventForm = () => {
                   cy="12"
                   r="10"
                   stroke="currentColor"
-                  stroke-width="4"
+                  strokeWidth="4"
                 ></circle>
                 <path
                   className="opacity-75"

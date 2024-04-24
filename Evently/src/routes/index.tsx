@@ -7,6 +7,7 @@ import CreateEvent from "@/pages/Event/CreateEvent";
 import Signin from "@/pages/Signin";
 import Profile from "@/pages/Profile";
 import Signup from "@/pages/Signup";
+import AIContent_Modal from "@/pages/Event/AIContentModal";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,12 @@ const router = createBrowserRouter([
         <Footer />
       </>
     ),
+    children: [
+      {
+        path: "help/AI",
+        element: <AIContent_Modal />,
+      },
+    ],
   },
   {
     path: "/profile",
